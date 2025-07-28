@@ -16,6 +16,9 @@ DB_NAME = "test.db"
 sqlite_sync_engine: Optional[Engine] = None
 sqlite_async_engine: Optional[AsyncEngine] = None
 
+def delete_db():
+    if os.path.exists(DB_NAME):
+        os.remove(DB_NAME)
 
 def reset_test_db():
     global sqlite_async_engine, sqlite_sync_engine
@@ -29,8 +32,7 @@ def reset_test_db():
             sqlite_async_engine.sync_engine.dispose()
         except Exception as e:
             print(f"Failed disposing async engine: {e}")
-    if os.path.exists(DB_NAME):
-        os.remove(DB_NAME)
+    delete_db()
     sqlite_async_engine = create_async_engine(
         url=f"sqlite+aiosqlite:///{DB_NAME}",
         echo=IS_ECHO,
