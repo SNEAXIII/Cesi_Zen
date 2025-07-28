@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from typing import Optional
 
@@ -12,10 +13,12 @@ from tests.utils.utils_constant import (
     USER_EMAIL,
     ADMIN_LOGIN,
     ADMIN_EMAIL,
+    USER_ID,
 )
 
 
 def get_generic_user(
+    is_base_id: bool = False,
     login: Optional[str] = None,
     email: Optional[str] = None,
     role: Optional[Roles] = None,
@@ -23,6 +26,7 @@ def get_generic_user(
     deleted_at: Optional[datetime] = None,
 ) -> User:
     return User(
+        id=USER_ID if is_base_id else uuid.uuid4(),
         login=login or USER_LOGIN,
         email=email or USER_EMAIL,
         hashed_password=HASHED_PASSWORD,
@@ -36,7 +40,7 @@ def get_user(
     disabled_at: Optional[datetime] = None,
     deleted_at: Optional[datetime] = None,
 ) -> User:
-    return get_generic_user(disabled_at=disabled_at, deleted_at=deleted_at)
+    return get_generic_user(is_base_id=True,disabled_at=disabled_at, deleted_at=deleted_at)
 
 
 def get_admin(

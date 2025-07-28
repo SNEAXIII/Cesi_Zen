@@ -2,19 +2,21 @@ import re
 from datetime import datetime, timezone, timedelta
 
 import pytest
+from httpx import Response
 
 from src.Messages.validators_messages import VALIDATION_ERROR
 from src.dto.dto_token import LoginResponse
+from src.enums.Roles import Roles
 from src.models import Article, Category, User, LoginLog, ExerciseCoherenceCardiac  # noqa: F401
 from main import app
 from src.security.secrets import SECRET
 from src.services.JWTService import JWTService
 from src.utils.db import get_session
 from tests.integ.endpoints.setup.user_setup import push_one_user
-from tests.utils.utils_constant import PLAIN_PASSWORD, USER_LOGIN
+from tests.utils.utils_constant import PLAIN_PASSWORD, USER_LOGIN, USER_ID, USER_EMAIL
 from tests.utils.utils_db import get_test_session, reset_test_db
-from tests.utils.utils_client import get_test_client
-from tests.utils.utils_random import is_valid_uuid
+from tests.utils.utils_client import execute_post_request
+from tests.utils.utils_random import extract_body_to_model
 
 app.dependency_overrides[get_session] = get_test_session
 
@@ -35,12 +37,40 @@ def get_field_error(field: str, message: str, type: str) -> dict:
 
 
 def get_field_missing_error(field: str) -> dict:
+    """
+    Sample of return value:
+    {
+        "field": {
+            "message": "Field required",
+            "type": "missing"
+        }
+    }
+    """
     return get_field_error(field, MISSING_MESSAGE, MISSING_TYPE)
 
 
 def login_bad_params(
     contains_username: bool = True, contains_password: bool = True
 ) -> dict:
+    """
+    Sample of return value for both variables = True:
+    {
+        "payload": {},
+        "errors": {
+            "message": "Erreur lors de la validation",
+            "errors": {
+                "username": {
+                    "message": "Field required",
+                    "type": "missing"
+                },
+                "password": {
+                    "message": "Field required",
+                    "type": "missing"
+                }
+            }
+        }
+    }
+    """
     payload = {}
     expected_errors = {"message": VALIDATION_ERROR, ERROR_KEY: {}}
     fields = {"username": contains_username, "password": contains_password}
@@ -51,6 +81,18 @@ def login_bad_params(
             new_error = get_field_missing_error(field)
             expected_errors[ERROR_KEY].update(new_error)
     return {PAYLOAD_KEY: payload, ERROR_KEY: expected_errors}
+
+
+async def login_request() -> Response:
+    await push_one_user()
+    payload = {USERNAME_KEY: USER_LOGIN, PASSWORD_KEY: PLAIN_PASSWORD}
+    route = "/auth/login"
+    return await execute_post_request(route, payload=payload)
+
+
+async def success_login() -> LoginResponse:
+    response = await login_request()
+    return extract_body_to_model(response.json(), LoginResponse)  # type: ignore
 
 
 # --- Test cases ---
@@ -71,15 +113,11 @@ params_login_bad_request = {
 )
 async def test_login_bad_request(values: dict):
     # Arrange
-    reset_test_db()
     route = "/auth/login"
 
     # Act
-    async with get_test_client() as client:
-        response = await client.post(
-            route,
-            data=values[PAYLOAD_KEY],
-        )
+    response = await execute_post_request(route, payload=values[PAYLOAD_KEY])
+    print(values)
 
     # Assert
     assert response.status_code == 400
@@ -87,38 +125,81 @@ async def test_login_bad_request(values: dict):
 
 
 @pytest.mark.asyncio
-async def test_login_authorize():
-    # Arrange
-    reset_test_db()
-    await push_one_user()
-    payload = {USERNAME_KEY: USER_LOGIN, PASSWORD_KEY: PLAIN_PASSWORD}
-    route = "/auth/login"
-
-    # Act
-    async with get_test_client() as client:
-        response = await client.post(
-            route,
-            data=payload,
-        )
+async def test_login_authorize_status_code():
+    # Arrange & act
+    response = await login_request()
 
     # Assert
-    ## Status code
     assert response.status_code == 200
-    ## Check body
-    body = LoginResponse.model_validate(response.json())
+
+
+@pytest.mark.asyncio
+async def test_login_authorize_token_type():
+    # Arrange & act
+    body = await success_login()
+
+    # Assert
     assert body.token_type == TOKEN_TYPE
+
+
+@pytest.mark.asyncio
+async def test_login_authorize_token_format():
+    # Arrange & act
+    body = await success_login()
+
+    # Assert
     token = body.access_token
     assert REGEX_BEARER.match(token), f"The token format is not valid: {token}"
-    ### Check jtw payload
-    jwt_payload = JWTService.decode_jwt(token)
-    #### Check expiration date
+
+
+@pytest.mark.asyncio
+async def test_login_authorize_expiration_date(freezer):
+    # Arrange & act
+    body = await success_login()
+
+    # Assert
+    jwt_payload = JWTService.decode_jwt(body.access_token)
     expiration_td = timedelta(minutes=SECRET.ACCESS_TOKEN_EXPIRE_MINUTES)
     created_at = datetime.now(tz=timezone.utc).replace(microsecond=0)
     expected_time = (created_at + expiration_td).timestamp()
     assert jwt_payload["exp"] == expected_time
-    #### Check content
-    print(jwt_payload)
-    assert is_valid_uuid(jwt_payload["user_id"])
+
+
+@pytest.mark.asyncio
+async def test_login_authorize_user_id():
+    # Arrange & act
+    body = await success_login()
+
+    # Assert
+    jwt_payload = JWTService.decode_jwt(body.access_token)
+    assert jwt_payload["user_id"] == str(USER_ID)
+
+
+@pytest.mark.asyncio
+async def test_login_authorize_sub():
+    # Arrange & act
+    body = await success_login()
+
+    # Assert
+    jwt_payload = JWTService.decode_jwt(body.access_token)
     assert jwt_payload["sub"] == USER_LOGIN
-    assert jwt_payload[]
-    # TODO FINISH here
+
+
+@pytest.mark.asyncio
+async def test_login_authorize_email():
+    # Arrange & act
+    body = await success_login()
+
+    # Assert
+    jwt_payload = JWTService.decode_jwt(body.access_token)
+    assert jwt_payload["email"] == USER_EMAIL
+
+
+@pytest.mark.asyncio
+async def test_login_authorize_role():
+    # Arrange & act
+    body = await success_login()
+
+    # Assert
+    jwt_payload = JWTService.decode_jwt(body.access_token)
+    assert jwt_payload["role"] == Roles.USER

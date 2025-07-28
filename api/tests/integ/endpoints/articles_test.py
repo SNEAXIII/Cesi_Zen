@@ -19,13 +19,10 @@ from tests.integ.endpoints.setup.articles_setup import (
     CREATED_AT,
     CONTENT,
 )
-from tests.utils.utils_db import (
-    get_test_session,
-    reset_test_db,  # noqa: F401
-)
+from tests.utils.utils_db import get_test_session
 from tests.utils.utils_client import get_test_client
 
-app.dependency_overrides[get_session] = get_test_session
+# app.dependency_overrides[get_session] = get_test_session
 
 
 get_all_params = {
@@ -105,7 +102,6 @@ get_all_params = {
     ids=[f"case_{k}" for k in get_all_params.keys()],
 )
 async def test_get_all(values: dict):
-    reset_test_db()
     route = values.get("route", "/articles/")
     await values["loader"]()
     async with get_test_client() as client:
@@ -144,7 +140,6 @@ get_one_params = {
 )
 async def test_get_one(values: dict):
     # Arrange
-    reset_test_db()
     route = "/articles/1"
     await values["loader"]()
 
