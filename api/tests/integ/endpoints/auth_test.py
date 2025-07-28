@@ -14,7 +14,7 @@ from src.services.JWTService import JWTService
 from src.utils.db import get_session
 from tests.integ.endpoints.setup.user_setup import push_one_user
 from tests.utils.utils_constant import PLAIN_PASSWORD, USER_LOGIN, USER_ID, USER_EMAIL
-from tests.utils.utils_db import get_test_session, reset_test_db
+from tests.utils.utils_db import get_test_session
 from tests.utils.utils_client import execute_post_request
 from tests.utils.utils_random import extract_body_to_model
 
@@ -117,7 +117,6 @@ async def test_login_bad_request(values: dict):
 
     # Act
     response = await execute_post_request(route, payload=values[PAYLOAD_KEY])
-    print(values)
 
     # Assert
     assert response.status_code == 400
@@ -203,3 +202,13 @@ async def test_login_authorize_role():
     # Assert
     jwt_payload = JWTService.decode_jwt(body.access_token)
     assert jwt_payload["role"] == Roles.USER
+
+# @pytest.mark.asyncio
+# async def test_login_authorize_check_login_date(session):
+#     # Arrange & act
+#     body = await success_login()
+#
+#     # Assert
+#     session.get()
+#     jwt_payload = JWTService.decode_jwt(body.access_token)
+#     assert jwt_payload["role"] == Roles.USER

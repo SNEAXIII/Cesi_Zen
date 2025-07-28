@@ -5,8 +5,7 @@ from sqlalchemy import Engine
 from sqlmodel import SQLModel, create_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
-from sqlalchemy.orm import sessionmaker
-
+from sqlalchemy.orm import sessionmaker, Session
 
 IS_ECHO = False
 # IS_ECHO = True
@@ -16,9 +15,11 @@ DB_NAME = "test.db"
 sqlite_sync_engine: Optional[Engine] = None
 sqlite_async_engine: Optional[AsyncEngine] = None
 
+
 def delete_db():
     if os.path.exists(DB_NAME):
         os.remove(DB_NAME)
+
 
 def reset_test_db():
     global sqlite_async_engine, sqlite_sync_engine
