@@ -6,8 +6,6 @@ from src.dto.dto_articles import (
     GetAllArticleResponse,
     GetArticleResponseFull,
 )
-from main import app
-from src.utils.db import get_session
 from tests.integ.endpoints.setup.articles_setup import (
     do_nothing,
     push_one_article_bundle,
@@ -19,10 +17,7 @@ from tests.integ.endpoints.setup.articles_setup import (
     CREATED_AT,
     CONTENT,
 )
-from tests.utils.utils_db import get_test_session
 from tests.utils.utils_client import get_test_client
-
-# app.dependency_overrides[get_session] = get_test_session
 
 
 get_all_params = {
