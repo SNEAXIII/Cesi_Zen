@@ -24,6 +24,7 @@ pytest-mock = "*"
 pytest-cov = "*"
 pytest-freezegun = "*"
 Faker = "*"
+time-machine = "*"
 
 [requires]
 python_version = "3.12"

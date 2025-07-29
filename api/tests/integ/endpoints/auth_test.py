@@ -1,13 +1,15 @@
 import re
 from datetime import datetime, timezone, timedelta
+from typing import List
 
 import pytest
 from httpx import Response
+from sqlmodel import select
 
 from src.Messages.validators_messages import VALIDATION_ERROR
 from src.dto.dto_token import LoginResponse
 from src.enums.Roles import Roles
-from src.models import Article, Category, User, LoginLog, ExerciseCoherenceCardiac  # noqa: F401
+from src.models import LoginLog, User
 from main import app
 from src.security.secrets import SECRET
 from src.services.JWTService import JWTService
@@ -83,25 +85,29 @@ def login_bad_params(
     return {PAYLOAD_KEY: payload, ERROR_KEY: expected_errors}
 
 
-async def login_request() -> Response:
-    await push_one_user()
+async def login_request(create_user: bool = True) -> Response:
+    if create_user:
+        await push_one_user()
     payload = {USERNAME_KEY: USER_LOGIN, PASSWORD_KEY: PLAIN_PASSWORD}
     route = "/auth/login"
     return await execute_post_request(route, payload=payload)
 
 
-async def success_login() -> LoginResponse:
-    response = await login_request()
+async def success_login(create_user: bool = True) -> LoginResponse:
+    response = await login_request(create_user)
     return extract_body_to_model(response.json(), LoginResponse)  # type: ignore
+
+
+async def get_user_log(session) -> List[LoginLog]:
+    sql = select(LoginLog).join(User).where(User.id == USER_ID)
+    return (await session.exec(sql)).all()
 
 
 # --- Test cases ---
 params_login_bad_request = {
     "missing_password": login_bad_params(contains_username=False),
     "missing_password_params": login_bad_params(contains_password=False),
-    "missing_everything_params": login_bad_params(
-        contains_username=False, contains_password=False
-    ),
+    "missing_everything_params": login_bad_params(False, False),
 }
 
 
@@ -124,7 +130,7 @@ async def test_login_bad_request(values: dict):
 
 
 @pytest.mark.asyncio
-async def test_login_authorize_status_code():
+async def test_login__authorize__status_code():
     # Arrange & act
     response = await login_request()
 
@@ -133,7 +139,7 @@ async def test_login_authorize_status_code():
 
 
 @pytest.mark.asyncio
-async def test_login_authorize_token_type():
+async def test_login__authorize__token_type():
     # Arrange & act
     body = await success_login()
 
@@ -142,7 +148,7 @@ async def test_login_authorize_token_type():
 
 
 @pytest.mark.asyncio
-async def test_login_authorize_token_format():
+async def test_login__authorize__token_format():
     # Arrange & act
     body = await success_login()
 
@@ -152,7 +158,7 @@ async def test_login_authorize_token_format():
 
 
 @pytest.mark.asyncio
-async def test_login_authorize_expiration_date(freezer):
+async def test_login__authorize__expiration_date(time_machine):
     # Arrange & act
     body = await success_login()
 
@@ -165,7 +171,7 @@ async def test_login_authorize_expiration_date(freezer):
 
 
 @pytest.mark.asyncio
-async def test_login_authorize_user_id():
+async def test_login__authorize__user_id():
     # Arrange & act
     body = await success_login()
 
@@ -175,7 +181,7 @@ async def test_login_authorize_user_id():
 
 
 @pytest.mark.asyncio
-async def test_login_authorize_sub():
+async def test_login__authorize__sub():
     # Arrange & act
     body = await success_login()
 
@@ -185,7 +191,7 @@ async def test_login_authorize_sub():
 
 
 @pytest.mark.asyncio
-async def test_login_authorize_email():
+async def test_login__authorize__email():
     # Arrange & act
     body = await success_login()
 
@@ -195,7 +201,7 @@ async def test_login_authorize_email():
 
 
 @pytest.mark.asyncio
-async def test_login_authorize_role():
+async def test_login__authorize__role():
     # Arrange & act
     body = await success_login()
 
@@ -203,12 +209,109 @@ async def test_login_authorize_role():
     jwt_payload = JWTService.decode_jwt(body.access_token)
     assert jwt_payload["role"] == Roles.USER
 
-# @pytest.mark.asyncio
-# async def test_login_authorize_check_login_date(session):
-#     # Arrange & act
-#     body = await success_login()
-#
-#     # Assert
-#     session.get()
-#     jwt_payload = JWTService.decode_jwt(body.access_token)
-#     assert jwt_payload["role"] == Roles.USER
+
+@pytest.mark.asyncio
+async def test_login__authorize__check_one_log(session):
+    # Arrange & act
+    await success_login()
+
+    # Assert
+    assert len(await get_user_log(session)) == 1
+
+
+@pytest.mark.asyncio
+async def test_login__authorize__check_last_login_date(session, time_machine):
+    # Arrange & act
+    time_machine.move_to(datetime.now(), tick=False)
+    await success_login()
+
+    # Assert
+    user = await session.get(User, USER_ID)
+    assert user.last_login_date == datetime.now()
+
+
+@pytest.mark.asyncio
+async def test_login__authorize__check_loginlog_date(session, time_machine):
+    # Arrange & act
+    time_machine.move_to(datetime.now(), tick=False)
+    await success_login()
+
+    # Assert
+    last_log = (await get_user_log(session)).pop()
+    assert last_log.date_connexion == datetime.now()
+
+
+@pytest.mark.asyncio
+async def test_login__no_login__check_last_login_date(session):
+    # Arrange & act
+    await push_one_user()
+
+    # Assert
+    user = await session.get(User, USER_ID)
+    assert user.last_login_date is None
+
+
+@pytest.mark.asyncio
+async def test_login__no_login__check_loginlog_date(session):
+    # Arrange & act
+    await push_one_user()
+
+    # Assert
+    login_log = await get_user_log(session)
+    assert len(login_log) == 0
+
+
+@pytest.mark.asyncio
+async def test_login__10_login__check_last_login_date(session, time_machine):
+    # Arrange
+    await push_one_user()
+    time_check = []
+    time_machine.move_to(datetime.now(), tick=False)
+
+    # Act
+    for iteration in range(10):
+        time_machine.shift(timedelta(hours=iteration * 25))
+        await login_request(create_user=False)
+        user = await session.get(User, USER_ID)
+        # We refresh to clear the cache
+        await session.refresh(user)
+        is_correct = user.last_login_date == datetime.now()
+        time_check.append(is_correct)
+
+    # Assert
+    assert all(time_check)
+
+
+@pytest.mark.asyncio
+async def test_login__10_login__check_login_log_number(session, time_machine):
+    # Arrange
+    await push_one_user()
+    time_check = []
+    time_machine.move_to(datetime.now(), tick=False)
+
+    # Act
+    for iteration in range(10):
+        time_machine.shift(timedelta(hours=iteration * 25))
+        await login_request(create_user=False)
+        loginlog = await session.get(LoginLog, iteration+1)
+        is_correct = loginlog.date_connexion == datetime.now()
+        time_check.append(is_correct)
+
+    # Assert
+    assert all(time_check)
+
+
+@pytest.mark.asyncio
+async def test_login__10_login__check_loginlog_date(session, time_machine):
+    # Arrange
+    await push_one_user()
+    time_machine.move_to(datetime.now(), tick=False)
+
+    # Act
+    for iteration in range(10):
+        time_machine.shift(timedelta(hours=iteration * 25))
+        await login_request(create_user=False)
+
+    # Assert
+    login_log = await get_user_log(session)
+    assert len(login_log) == 10

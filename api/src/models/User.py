@@ -27,7 +27,5 @@ class User(SQLModel, table=True):
     articles: List["Article"] = Relationship(back_populates="user")
     connexions: List["LoginLog"] = Relationship(back_populates="user")
 
-    def set_last_login_date(self, date: Optional[datetime] = None):
-        if date is None:
-            date = datetime.now()
+    def set_last_login_date(self, date: datetime):
         self.last_login_date = date
