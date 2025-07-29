@@ -27,6 +27,20 @@ jobs:
           cd api
           python -m pip install --upgrade pip
           pip install -r requirements_dev.txt
+      - name: 'Create .env file'
+        run: |
+          touch api.env
+          echo SECRET_KEY="e84d5905aeae1c719c51ea619193aa258e765635bedac71cd28dc18c7875f703929355425b7618075a9b1645b1ea4ac8bc3c164a3ae2f6d246f1a5e1243c3c89" >> .env
+          echo MARIADB_USER="izi" >> api.env
+          echo MARIADB_PASSWORD="izi" >> api.env
+          echo MARIADB_ROOT_PASSWORD="izi" >> api.env
+          echo MARIADB_HOST="localhost" >> api.env
+          echo MARIADB_PORT="3306" >> api.env
+          echo MARIADB_DATABASE="cesi-zen" >> api.env
+          echo ALGORITHM="HS256" >> api.env
+          echo BCRYPT_HASH_ROUND="12" >> api.env
+          echo ACCESS_TOKEN_EXPIRE_MINUTES="60" >> api.env
+          cat api.env
       - name: Install ruff without running check or format
         uses: astral-sh/ruff-action@v3
       - name: Test with pytest
