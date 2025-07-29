@@ -254,7 +254,7 @@ async def test_get_user_by_login_with_validity_check_error(
 
 
 @pytest.mark.asyncio
-async def test_patch_disable_user_success(mocker, freezer):
+async def test_patch_disable_user_success(mocker, use_time_machine):
     # Arrange
     fake_user = User(login=LOGIN)
     mock_session = session_mock(mocker)
@@ -297,7 +297,7 @@ async def test_patch_disable_user_error(mocker, fake_user, expected_error):
 
 
 @pytest.mark.asyncio
-async def test_self_delete_success(mocker, freezer):
+async def test_self_delete_success(mocker, use_time_machine):
     # Arrange
     current_time = datetime.now()
     current_user = User(
@@ -407,7 +407,7 @@ async def test_patch_enable_user_error(mocker, fake_user, expected_error):
 
 
 @pytest.mark.asyncio
-async def test_delete_user_success(mocker, freezer):
+async def test_delete_user_success(mocker, use_time_machine):
     # Arrange
     fake_user = User(login=LOGIN)
     mock_session = session_mock(mocker)
