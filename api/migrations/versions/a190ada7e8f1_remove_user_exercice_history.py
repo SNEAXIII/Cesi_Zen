@@ -9,7 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-import sqlmodel
+import sqlmodel  # noqa: F401
 from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
