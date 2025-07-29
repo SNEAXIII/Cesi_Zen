@@ -2,7 +2,7 @@ test.db
 .idea
 data/db/*
 .coverage
-*.env
+api.env
 todo
 
 # Byte-compiled / optimized / DLL files
