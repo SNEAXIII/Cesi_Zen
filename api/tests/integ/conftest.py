@@ -1,5 +1,5 @@
-from contextlib import asynccontextmanager
 
+import pytest_asyncio
 import pytest
 
 from main import app
@@ -21,11 +21,10 @@ def reset_db() -> None:
     app.dependency_overrides.clear()
 
 
-@pytest.fixture(scope="function")
-def session():
-    session = Session()
-    yield session
-    session.close()
+@pytest_asyncio.fixture(scope="function")
+async def session():
+    async with Session() as session:
+        yield session
 
 @pytest.fixture(scope="session", autouse=True)
 def delete_test_db():

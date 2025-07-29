@@ -22,7 +22,6 @@ aiosqlite = "*"
 pytest-asyncio = "*"
 pytest-mock = "*"
 pytest-cov = "*"
-pytest-freezegun = "*"
 Faker = "*"
 time-machine = "*"
 

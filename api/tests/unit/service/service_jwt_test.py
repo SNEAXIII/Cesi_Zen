@@ -132,7 +132,7 @@ def test_create_access_token_no_user():
     assert error.value.detail == str(CREDENTIALS_EXCEPTION)
 
 
-def test_create_token_success(mocker, freezer):
+def test_create_token_success(mocker, use_time_machine):
     # Arrange
     input_data = {"sub": LOGIN, "role": Roles.USER.value}
     mock_encode_mock = encode_mock(mocker)
