@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Optional
 from fastapi import Depends
 
@@ -29,7 +30,7 @@ class AuthService:
         )
         if is_correct_password is not True:
             raise CREDENTIALS_EXCEPTION
-        user.set_last_login_date()
+        user.set_last_login_date(datetime.now())
         login_log = LoginLog(user=user)
         session.add(login_log)
         await session.commit()

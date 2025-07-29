@@ -1,6 +1,5 @@
 import pytest
 
-from src.models import Article, Category, User, LoginLog, ExerciseCoherenceCardiac  # noqa: F401
 from src.dto.dto_articles import (
     GetArticleResponseMin,
     GetAllArticleResponse,

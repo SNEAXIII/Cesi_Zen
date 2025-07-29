@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from src.enums.Roles import Roles
-from src.models import Article, Category, User, LoginLog, ExerciseCoherenceCardiac  # noqa: F401
+from src.models import User
 from tests.utils.utils_db import load_objects
 
 
@@ -40,7 +40,9 @@ def get_user(
     disabled_at: Optional[datetime] = None,
     deleted_at: Optional[datetime] = None,
 ) -> User:
-    return get_generic_user(is_base_id=True,disabled_at=disabled_at, deleted_at=deleted_at)
+    return get_generic_user(
+        is_base_id=True, disabled_at=disabled_at, deleted_at=deleted_at
+    )
 
 
 def get_admin(

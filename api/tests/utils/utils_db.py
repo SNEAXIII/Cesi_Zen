@@ -1,19 +1,30 @@
 import os
-from typing import List, Optional
+from typing import List
 
-from sqlalchemy import Engine
 from sqlmodel import SQLModel, create_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import sessionmaker
+
 
 IS_ECHO = False
 # IS_ECHO = True
+IS_ECHO_ASYNC = False
+# IS_ECHO_ASYNC = True
 DB_NAME = "test.db"
 
+sqlite_sync_engine = create_engine(
+    f"sqlite:///{DB_NAME}", echo=IS_ECHO, query_cache_size=0
+)
+sqlite_async_engine = create_async_engine(
+    url=f"sqlite+aiosqlite:///{DB_NAME}", echo=IS_ECHO_ASYNC, query_cache_size=0
+)
 
-sqlite_sync_engine: Optional[Engine] = None
-sqlite_async_engine: Optional[AsyncEngine] = None
+Session = sessionmaker(
+    bind=sqlite_async_engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
 
 
 def delete_db():
@@ -34,23 +45,10 @@ def reset_test_db():
         except Exception as e:
             print(f"Failed disposing async engine: {e}")
     delete_db()
-    sqlite_async_engine = create_async_engine(
-        url=f"sqlite+aiosqlite:///{DB_NAME}",
-        echo=IS_ECHO,
-    )
-    sqlite_sync_engine = create_engine(
-        f"sqlite:///{DB_NAME}",
-        echo=IS_ECHO,
-    )
     SQLModel.metadata.create_all(sqlite_sync_engine)
 
 
 async def get_test_session() -> AsyncSession:
-    Session = sessionmaker(
-        bind=sqlite_async_engine,
-        class_=AsyncSession,
-        expire_on_commit=False,
-    )
     async with Session() as session:
         yield session
 
