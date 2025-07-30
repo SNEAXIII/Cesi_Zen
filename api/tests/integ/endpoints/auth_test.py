@@ -158,7 +158,7 @@ async def test_login__authorize__token_format():
 
 
 @pytest.mark.asyncio
-async def test_login__authorize__expiration_date(time_machine):
+async def test_login__authorize__expiration_date(use_time_machine):
     # Arrange & act
     body = await success_login()
 
@@ -220,9 +220,8 @@ async def test_login__authorize__check_one_log(session):
 
 
 @pytest.mark.asyncio
-async def test_login__authorize__check_last_login_date(session, time_machine):
+async def test_login__authorize__check_last_login_date(session, use_time_machine):
     # Arrange & act
-    time_machine.move_to(datetime.now(), tick=False)
     await success_login()
 
     # Assert
@@ -231,9 +230,8 @@ async def test_login__authorize__check_last_login_date(session, time_machine):
 
 
 @pytest.mark.asyncio
-async def test_login__authorize__check_loginlog_date(session, time_machine):
+async def test_login__authorize__check_loginlog_date(session, use_time_machine):
     # Arrange & act
-    time_machine.move_to(datetime.now(), tick=False)
     await success_login()
 
     # Assert
@@ -262,15 +260,14 @@ async def test_login__no_login__check_loginlog_date(session):
 
 
 @pytest.mark.asyncio
-async def test_login__10_login__check_last_login_date(session, time_machine):
+async def test_login__10_login__check_last_login_date(session, use_time_machine):
     # Arrange
     await push_one_user()
     time_check = []
-    time_machine.move_to(datetime.now(), tick=False)
 
     # Act
     for iteration in range(10):
-        time_machine.shift(timedelta(hours=iteration * 25))
+        use_time_machine.shift(timedelta(hours=iteration * 25))
         await login_request(create_user=False)
         user = await session.get(User, USER_ID)
         # We refresh to clear the cache
@@ -283,15 +280,14 @@ async def test_login__10_login__check_last_login_date(session, time_machine):
 
 
 @pytest.mark.asyncio
-async def test_login__10_login__check_login_log_number(session, time_machine):
+async def test_login__10_login__check_login_log_number(session, use_time_machine):
     # Arrange
     await push_one_user()
     time_check = []
-    time_machine.move_to(datetime.now(), tick=False)
 
     # Act
     for iteration in range(10):
-        time_machine.shift(timedelta(hours=iteration * 25))
+        use_time_machine.shift(timedelta(hours=iteration * 25))
         await login_request(create_user=False)
         loginlog = await session.get(LoginLog, iteration+1)
         is_correct = loginlog.date_connexion == datetime.now()
@@ -302,14 +298,12 @@ async def test_login__10_login__check_login_log_number(session, time_machine):
 
 
 @pytest.mark.asyncio
-async def test_login__10_login__check_loginlog_date(session, time_machine):
+async def test_login__10_login__check_loginlog_date(session, use_time_machine):
     # Arrange
     await push_one_user()
-    time_machine.move_to(datetime.now(), tick=False)
-
     # Act
     for iteration in range(10):
-        time_machine.shift(timedelta(hours=iteration * 25))
+        use_time_machine.shift(timedelta(hours=iteration * 25))
         await login_request(create_user=False)
 
     # Assert
