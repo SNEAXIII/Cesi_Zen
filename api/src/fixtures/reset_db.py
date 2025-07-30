@@ -8,7 +8,7 @@ from sqlmodel import Session, SQLModel, create_engine
 from src.security.secrets import SECRET
 
 engine = create_engine(
-    f"mysql+pymysql://{SECRET.MARIADB_USER}:{SECRET.MARIADB_PASSWORD}@{SECRET.MARIADB_HOST}/{SECRET.MARIADB_DATABASE}",
+    f"mysql+pymysql://{SECRET.MARIADB_USER}:{SECRET.MARIADB_PASSWORD}@localhost/{SECRET.MARIADB_DATABASE}",
     # echo=True,
 )
 

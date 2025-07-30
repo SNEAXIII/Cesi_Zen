@@ -13,7 +13,7 @@ services:
     env_file: db.env
     volumes:
       - ./data/db/:/var/lib/mysql
-  phmyadmin:
+  phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
       - 8080:80
@@ -25,3 +25,16 @@ services:
       - PMA_PORT=3306
     depends_on:
       - mariadb
+  api:
+    build:
+      context: ./api/
+      dockerfile: api.Dockerfile
+    container_name: api
+    ports:
+      - 8000:8000
+    networks:
+      - internal
+    depends_on:
+      - mariadb
+    env_file:
+      - api/api.env

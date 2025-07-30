@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
       - name: Set up Python 3.12
         uses: actions/setup-python@v3
         with:
@@ -30,9 +31,10 @@ jobs:
       - name: 'Create .env file'
         working-directory: ./api
         run: |
-          mv gitflow.env api.env
+          mv api.env.example api.env
       - name: Install ruff without running check or format
-        uses: astral-sh/ruff-action@v3
+        run: |
+          ruff check
       - name: Test with pytest
         working-directory: ./api
         run: |
