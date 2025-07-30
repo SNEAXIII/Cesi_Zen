@@ -1,0 +1,46 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+
+# Virtual environment
+venv/
+
+# Python egg metadata and cache
+*.egg-info/
+.eggs/
+*.egg
+.cache/
+
+# Pytest
+.pytest_cache/
+.coverage*
+tests/
+
+# Build / distribution directories
+build/
+dist/
+*.whl
+
+# Git
+.git/
+.gitignore
+
+# Docker-related
+Dockerfile
+docker-compose.yml
+
+# OS / IDE files
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Requirements
+requirements_dev.txt
+Pipfile.lock
+Pipfile
+*.env
