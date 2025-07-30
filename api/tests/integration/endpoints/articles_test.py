@@ -5,7 +5,7 @@ from src.dto.dto_articles import (
     GetAllArticleResponse,
     GetArticleResponseFull,
 )
-from tests.integ.endpoints.setup.articles_setup import (
+from tests.integration.endpoints.setup.articles_setup import (
     do_nothing,
     push_one_article_bundle,
     push_ten_articles_bundle,

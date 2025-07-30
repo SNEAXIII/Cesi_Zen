@@ -14,7 +14,7 @@ from main import app
 from src.security.secrets import SECRET
 from src.services.JWTService import JWTService
 from src.utils.db import get_session
-from tests.integ.endpoints.setup.user_setup import push_one_user
+from tests.integration.endpoints.setup.user_setup import push_one_user
 from tests.utils.utils_constant import PLAIN_PASSWORD, USER_LOGIN, USER_ID, USER_EMAIL
 from tests.utils.utils_db import get_test_session
 from tests.utils.utils_client import execute_post_request
