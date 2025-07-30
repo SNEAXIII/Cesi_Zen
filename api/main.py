@@ -17,8 +17,10 @@ from starlette import status
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-# ic.disable()
+from src.security.secrets import SECRET
 
+# ic.disable()
+ic(f"Targeted db: {SECRET.MARIADB_DATABASE}")
 
 app = FastAPI()
 # origins = ["http://localhost:*", "http://192.168.1.14:3000", "http://127.0.0.1:8000"]
@@ -38,6 +40,7 @@ app.include_router(category_controller)
 app.include_router(exercise_controller)
 
 ic(app.routes)
+
 
 def custom_openapi():
     if app.openapi_schema:
