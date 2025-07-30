@@ -58,7 +58,7 @@ jobs:
       - name: Debug Docker Hub secrets
         run: |
           echo "DOCKERHUB_USERNAME=${{ vars.DOCKERHUB_USERNAME }}"
-          echo "DOCKER_HUB_TOKEN=${{ secrets.DOCKER_HUB_TOKEN:+set }}"
+          echo "DOCKER_HUB_TOKEN=${{ secrets.DOCKER_HUB_TOKEN }}"
         shell: bash
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
