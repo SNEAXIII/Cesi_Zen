@@ -55,9 +55,19 @@ jobs:
     steps:
       - name: Check secrets availability
         run: |
-          echo "Checking secrets..."
-          if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ]; then echo "❌ DOCKERHUB_USERNAME is not set" ; else echo "✅ DOCKERHUB_USERNAME is available" ; fi
-          if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then echo "❌ DOCKERHUB_TOKEN is not set" ; else echo "✅ DOCKERHUB_TOKEN is available" ; fi
+          echo "🔍 Checking secrets..."
+
+          if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ]; then
+            echo "❌ DOCKERHUB_USERNAME is not set"
+          else
+            echo "✅ DOCKERHUB_USERNAME is available"
+          fi
+
+          if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+            echo "❌ DOCKERHUB_TOKEN is not set"
+          else
+            echo "✅ DOCKERHUB_TOKEN is available"
+          fi
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Debug Docker Hub secrets
