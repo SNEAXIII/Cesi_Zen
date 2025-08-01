@@ -54,21 +54,6 @@ jobs:
     runs-on: ubuntu-latest
 #    needs: lint-test
     steps:
-      - name: Check secrets availability
-        run: |
-          echo "🔍 Checking secrets..."
-
-          if [ -z "${{ vars.DOCKERHUB_USERNAME }}" ]; then
-            echo "❌ DOCKERHUB_USERNAME is not set"
-          else
-            echo "✅ DOCKERHUB_USERNAME is available"
-          fi
-          if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
-            echo "❌ DOCKERHUB_TOKEN is not set"
-          else
-            echo "✅ DOCKERHUB_TOKEN is available"
-          fi
-          exit 1
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Log in to Docker Hub
