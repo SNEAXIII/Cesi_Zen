@@ -49,6 +49,7 @@ jobs:
 #        working-directory: ${{ env.WORKDIR }}
 #        run: pytest tests/integration
   docker:
+    environment: Api
     name: Docker Build & Push
     runs-on: ubuntu-latest
 #    needs: lint-test
