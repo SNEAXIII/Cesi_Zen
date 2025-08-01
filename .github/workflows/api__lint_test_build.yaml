@@ -69,4 +69,4 @@ jobs:
           context: ./api
           file: ./api/api.Dockerfile
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/api:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/cesi-zen-api:latest
