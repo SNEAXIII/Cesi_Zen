@@ -58,7 +58,7 @@ jobs:
         run: |
           echo "🔍 Checking secrets..."
 
-          if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ]; then
+          if [ -z "${{ vars.DOCKERHUB_USERNAME }}" ]; then
             echo "❌ DOCKERHUB_USERNAME is not set"
           else
             echo "✅ DOCKERHUB_USERNAME is available"
