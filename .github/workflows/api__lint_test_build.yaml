@@ -62,19 +62,14 @@ jobs:
           else
             echo "✅ DOCKERHUB_USERNAME is available"
           fi
-
           if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
             echo "❌ DOCKERHUB_TOKEN is not set"
           else
             echo "✅ DOCKERHUB_TOKEN is available"
           fi
+          exit 1
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Debug Docker Hub secrets
-        run: |
-          echo "DOCKERHUB_USERNAME=${{ vars.DOCKERHUB_USERNAME }}"
-          echo "DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}"
-        shell: bash
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
