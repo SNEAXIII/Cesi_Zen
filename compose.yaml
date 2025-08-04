@@ -26,10 +26,10 @@ services:
     depends_on:
       - mariadb
   api:
-    #    image: sneaxiii/cesi-zen-api
-    build:
-      context: ./api/
-      dockerfile: api.Dockerfile
+    image: sneaxiii/cesi-zen-api
+#    build:
+#      context: ./api/
+#      dockerfile: api.Dockerfile
     container_name: api
     ports:
       - 8000:8000
@@ -41,9 +41,10 @@ services:
       - api.env
     command: ["sh", "run.sh"]
   front:
-    build:
-      context: ./front
-      dockerfile: front.Dockerfile
+    image: sneaxiii/cesi-zen-front
+#    build:
+#      context: ./front
+#      dockerfile: front.Dockerfile
     container_name: front
     ports:
       - 3000:3000
