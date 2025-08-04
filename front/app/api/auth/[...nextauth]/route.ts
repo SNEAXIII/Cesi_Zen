@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import jwt from 'jsonwebtoken';
+import { SERVER_API_URL } from '@/next.config';
 
 interface JwtPayload {
   user_id: string;
@@ -33,7 +34,7 @@ export const {
           formData.append('username', username);
           formData.append('password', password);
 
-          const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/login`, {
+          const res = await fetch(`${SERVER_API_URL}/auth/login`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',

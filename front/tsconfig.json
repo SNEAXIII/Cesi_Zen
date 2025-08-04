@@ -34,9 +34,10 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/lib/placeholder-data.ts",
+    "build/types/**/*.ts",
     "next-env.d.ts",
     "scripts/seed.js",
-    "build/types/**/*.ts"
+    "next-build/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

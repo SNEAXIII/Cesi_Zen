@@ -1,10 +1,11 @@
+import { CLIENT_API_URL } from '@/next.config';
 export interface Category {
   id: number;
   label: string;
 }
 
 export async function getAllCategories(): Promise<Category[]> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/categories`);
+  const response = await fetch(`${CLIENT_API_URL}/categories`);
 
   if (!response.ok) {
     const error = await response.json();

@@ -19,7 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader } from 'lucide-react';
-import { LuKeyRound, LuTrash2 } from 'react-icons/lu';
+import { LuKeyRound, LuLogOut, LuTrash2 } from 'react-icons/lu';
 
 export default function ProfilePage() {
   const pathname = usePathname();
@@ -65,6 +65,13 @@ export default function ProfilePage() {
       );
       setIsDeleting(false);
     }
+  };
+
+  const handleSignOut = () => {
+    signOut({
+      callbackUrl: '/',
+      redirect: true
+    });
   };
 
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -167,12 +174,14 @@ export default function ProfilePage() {
           </div>
 
           <div className='flex justify-end'>
-            <button
-              onClick={() => signOut({ callbackUrl: '/' })}
-              className='px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors'
+            <Button
+              variant="destructive"
+              className="w-full mt-4"
+              onClick={handleSignOut}
             >
+              <LuLogOut className="mr-2 h-4 w-4" />
               Se déconnecter
-            </button>
+            </Button>
           </div>
 
           {/* Section de sécurité */}
@@ -403,3 +412,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+  
