@@ -1,3 +1,4 @@
+import { CLIENT_API_URL } from '@/next.config';
 export interface Exercise {
   id: number;
   name: string;
@@ -11,10 +12,10 @@ export interface ExercisesResponse {
 }
 export async function getExercises(): Promise<ExercisesResponse> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/exercises/`, {
+    const response = await fetch(`${CLIENT_API_URL}/exercises/`, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
     });
 
@@ -24,7 +25,7 @@ export async function getExercises(): Promise<ExercisesResponse> {
     }
 
     const data = await response.json();
-    const exercises = Array.isArray(data) ? data : (data.exercises || []);
+    const exercises = Array.isArray(data) ? data : data.exercises || [];
     return { exercises };
   } catch (error) {
     console.error('Erreur dans getExercises:', error);
