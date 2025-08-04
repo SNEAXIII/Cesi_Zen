@@ -48,7 +48,6 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-USER nextjs
 
 EXPOSE 3000
 ENV PORT=3000
@@ -57,5 +56,9 @@ ENV PORT=3000
 # https://nextjs.org/docs/pages/api-reference/config/next-config-js/output
 ENV HOSTNAME="0.0.0.0"
 
+#Add utils script
 COPY ./run.sh ./wait-for-it.sh ./
+RUN chmod u+w *.sh
 RUN find . -type f -name "*.sh" -exec dos2unix {} \;
+
+USER nextjs
