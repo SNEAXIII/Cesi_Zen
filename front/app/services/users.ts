@@ -1,6 +1,6 @@
 import { possibleRoles, possibleStatus } from '@/app/ui/dashboard/table/table-header';
 import { getHeaders } from '@/app/lib/utils';
-
+import { CLIENT_API_URL } from '@/next.config';
 export interface User {
   login: string;
   email: string;
@@ -54,7 +54,6 @@ export interface ApiErrorResponse {
   errors: ValidationErrors;
 }
 
-
 export const getUsers = async (
   page: number = 1,
   size: number = 10,
@@ -65,7 +64,7 @@ export const getUsers = async (
   try {
     const query_status = status && status !== possibleStatus[0].value ? `&status=${status}` : '';
     const query_role = role && role !== possibleRoles[0].value ? `&role=${role}` : '';
-    const url = `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/admin/users?page=${page}&size=${size}${query_status}${query_role}`;
+    const url = `${CLIENT_API_URL}/admin/users?page=${page}&size=${size}${query_status}${query_role}`;
     const headers = getHeaders(token);
     const response = await fetch(url, {
       headers,
@@ -103,7 +102,7 @@ export const registerUser = async (formData: RegisterUserRequest): Promise<true>
     password: formData.password,
     confirm_password: formData.confirm_password,
   });
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/register`, {
+  const response = await fetch(`${CLIENT_API_URL}/auth/register`, {
     method: 'POST',
     headers: getHeaders(),
     body,
@@ -125,7 +124,7 @@ export const registerUser = async (formData: RegisterUserRequest): Promise<true>
 };
 export const deleteAccount = async (password: string, token?: string): Promise<true> => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/user/delete`, {
+    const response = await fetch(`${CLIENT_API_URL}/user/delete`, {
       method: 'DELETE',
       headers: getHeaders(token),
       body: JSON.stringify({ password }),
@@ -144,13 +143,10 @@ export const deleteAccount = async (password: string, token?: string): Promise<t
 };
 
 export const disableUser = async (userId: string, token?: string): Promise<true> => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/admin/users/disable/${userId}`,
-    {
-      method: 'PATCH',
-      headers: getHeaders(token),
-    }
-  );
+  const response = await fetch(`${CLIENT_API_URL}/admin/users/disable/${userId}`, {
+    method: 'PATCH',
+    headers: getHeaders(token),
+  });
 
   if (!response.ok) {
     const errorData: ApiError = await response.json().catch(() => ({}));
@@ -161,13 +157,10 @@ export const disableUser = async (userId: string, token?: string): Promise<true>
 };
 
 export const enableUser = async (userId: string, token?: string): Promise<true> => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/admin/users/enable/${userId}`,
-    {
-      method: 'PATCH',
-      headers: getHeaders(token),
-    }
-  );
+  const response = await fetch(`${CLIENT_API_URL}/admin/users/enable/${userId}`, {
+    method: 'PATCH',
+    headers: getHeaders(token),
+  });
 
   if (!response.ok) {
     const errorData: ApiError = await response.json().catch(() => ({}));
@@ -178,13 +171,10 @@ export const enableUser = async (userId: string, token?: string): Promise<true> 
 };
 
 export const deleteUser = async (userId: string, token?: string): Promise<true> => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/admin/users/delete/${userId}`,
-    {
-      method: 'DELETE',
-      headers: getHeaders(token),
-    }
-  );
+  const response = await fetch(`${CLIENT_API_URL}/admin/users/delete/${userId}`, {
+    method: 'DELETE',
+    headers: getHeaders(token),
+  });
 
   if (!response.ok) {
     const errorData: ApiError = await response.json().catch(() => ({}));
@@ -198,14 +188,11 @@ export const promoteToAdmin = async (userId: string, token?: string): Promise<tr
   const body = JSON.stringify({
     user_uuid_to_promote: userId,
   });
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/admin/users/promote/${userId}`,
-    {
-      method: 'PATCH',
-      headers: getHeaders(token),
-      body,
-    }
-  );
+  const response = await fetch(`${CLIENT_API_URL}/admin/users/promote/${userId}`, {
+    method: 'PATCH',
+    headers: getHeaders(token),
+    body,
+  });
 
   if (!response.ok) {
     const errorData: ApiErrorResponse = await response.json().catch(() => ({
@@ -231,7 +218,7 @@ export const resetUserPassword = async (
     confirm_password: resetUserPasswordRequest.confirm_password,
     old_password: resetUserPasswordRequest.old_password,
   });
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/user/reset-password`, {
+  const response = await fetch(`${CLIENT_API_URL}/user/reset-password`, {
     method: 'PATCH',
     headers: getHeaders(token),
     body,
@@ -239,7 +226,7 @@ export const resetUserPassword = async (
 
   if (!response.ok) {
     const errorData: ApiErrorResponse = await response.json().catch(() => ({
-      message: "Erreur lors de la réinitialisation du mot de passe",
+      message: 'Erreur lors de la réinitialisation du mot de passe',
       errors: {},
     }));
     const error = new Error(errorData.message) as Error & {

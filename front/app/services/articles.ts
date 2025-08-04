@@ -1,10 +1,12 @@
 import { getHeaders } from '@/app/lib/utils';
+import { CLIENT_API_URL } from '@/next.config';
 
 interface ArticleData {
   title: string;
   content: string;
   category: string | number;
 }
+
 export interface Article {
   id: number;
   title: string;
@@ -19,6 +21,7 @@ export interface ArticlesResponse {
   articles: Article[];
   count: number;
 }
+
 export async function createArticle(articleData: ArticleData, token?: string) {
   const body = JSON.stringify({
     title: articleData.title,
@@ -26,7 +29,7 @@ export async function createArticle(articleData: ArticleData, token?: string) {
     category: Number(articleData.category),
   });
   const headers = getHeaders(token);
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/admin/articles`, {
+  const response = await fetch(`${CLIENT_API_URL}/admin/articles`, {
     method: 'POST',
     headers,
     body,
@@ -43,7 +46,7 @@ export async function createArticle(articleData: ArticleData, token?: string) {
 export async function deleteArticle(articleId: string | number, token?: string) {
   const headers = getHeaders(token);
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/admin/articles/${articleId}`,
+    `${CLIENT_API_URL}/admin/articles/${articleId}`,
     {
       method: 'DELETE',
       headers,
@@ -57,7 +60,7 @@ export async function deleteArticle(articleId: string | number, token?: string) 
 }
 
 export async function getArticle(articleId: string | number): Promise<Article> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/articles/${articleId}`);
+  const response = await fetch(`${CLIENT_API_URL}/articles/${articleId}`);
 
   if (!response.ok) {
     const error = await response.json();
@@ -68,7 +71,7 @@ export async function getArticle(articleId: string | number): Promise<Article> {
 }
 
 export async function getAllArticles(categoryId?: number): Promise<ArticlesResponse> {
-  const url = new URL(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/articles`);
+  const url = new URL(`${CLIENT_API_URL}/articles`);
 
   if (categoryId) {
     url.searchParams.append('category_id', categoryId.toString());
