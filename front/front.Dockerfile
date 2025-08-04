@@ -58,7 +58,6 @@ ENV HOSTNAME="0.0.0.0"
 
 #Add utils script
 COPY ./run.sh ./wait-for-it.sh ./
-RUN chmod u+w *.sh
-RUN find . -type f -name "*.sh" -exec dos2unix {} \;
+RUN chmod +x *.sh && find . -type f -name "*.sh" -exec dos2unix {} \;
 
 USER nextjs
