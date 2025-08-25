@@ -23,7 +23,7 @@ class States(str, Enum):
     DELETED = "deleted"
 
 
-PASSWORD = "test"
+PASSWORD = "test" # NOSONAR
 NOW = datetime.now()
 
 
