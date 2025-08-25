@@ -63,8 +63,19 @@ export async function getArticle(articleId: string | number): Promise<Article> {
   const response = await fetch(`${CLIENT_API_URL}/articles/${articleId}`);
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error ?? "Erreur lors de la récupération de l'article");
+    let errorMessage = `Erreur ${response.status} lors de la récupération de l'article`;
+    try {
+      const errorData = await response.json();
+      // Si le serveur renvoie { message: "..." } ou un simple string
+      if (errorData?.message) {
+        errorMessage = errorData.message;
+      } else if (typeof errorData === "string") {
+        errorMessage = errorData;
+      }
+    } catch (e) {
+      // ignore JSON parsing error
+    }
+    throw new Error(errorMessage);
   }
 
   return await response.json();
@@ -83,6 +94,6 @@ export async function getAllArticles(categoryId?: number): Promise<ArticlesRespo
     const error = await response.json();
     throw new Error(error.message ?? 'Erreur lors de la récupération des articles');
   }
-  
+
   return await response.json();
 }
