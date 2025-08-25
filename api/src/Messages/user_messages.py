@@ -30,11 +30,11 @@ LOGIN_WRONG_SIZE = "Le nom d'utilisateur doit faire entre %d et %d caractères"
 LOGIN_NON_ALPHANUM = (
     "Le nom d'utilisateur ne doit contenir que des chiffres et des lettres"
 )
-PASSWORD_WRONG_SIZE = "faire entre %d et %d caractères"
-PASSWORD_NEED_DIGIT = "contenir un chiffre"
-PASSWORD_NEED_UPPER = "contenir une majuscule"
-PASSWORD_NEED_LOWER = "contenir une minuscule"
-PASSWORD_NEED_SPECIAL = 'contenir un caractère spécial parmis "%s"'
+PASSWORD_WRONG_SIZE = "faire entre %d et %d caractères" # NOSONAR
+PASSWORD_NEED_DIGIT = "contenir un chiffre" # NOSONAR
+PASSWORD_NEED_UPPER = "contenir une majuscule" # NOSONAR
+PASSWORD_NEED_LOWER = "contenir une minuscule" # NOSONAR
+PASSWORD_NEED_SPECIAL = 'contenir un caractère spécial parmis "%s"' # NOSONAR
 TARGET_USER_DISABLED_SUCCESSFULLY = "Le compte cible a bien été désactivé"
 TARGET_USER_ENABLED_SUCCESSFULLY = "Le compte cible a bien été activé"
 TARGET_USER_DELETED_SUCCESSFULLY = "Le compte cible a bien été supprimé"
