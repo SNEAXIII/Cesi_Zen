@@ -14,11 +14,10 @@ ADMIN_EMAIL  = f"{ADMIN_LOGIN}@gmail.com"
 
 
 # Password
-PASSWORD = "ComplexPassword1!"
+PASSWORD = "ComplexPassword1!" # NOSONAR
 PLAIN_PASSWORD = "password"
 HASHED_PASSWORD = "$2b$04$c5i699sDUICKICmOARITy.wCpNpnp8U/hXlqWtHmvgZBtXc4iUF0y"
 
-# TODO put an immortal token here
 FAKE_TOKEN = "FAKE_TOKEN"  # For unit test purpose
 
 # Article

@@ -127,7 +127,7 @@ async def test_get_current_user_in_jwt_user_not_found(mocker):
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "role",
-    [role for role in Roles.__members__.values()],
+    list(Roles.__members__.values()),
 )
 async def test_is_logged_as_user_success(mocker, role):
     # Arrange

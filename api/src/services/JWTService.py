@@ -44,16 +44,6 @@ class JWTService:
             expires_delta=access_token_expires,
         )
 
-    # @classmethod
-    # def create_refresh_token(cls, authenticated_user: User):
-    #     if not authenticated_user:
-    #         raise CREDENTIALS_EXCEPTION
-    #     refresh_token_expire = timedelta(minutes=SECRET.REFRESH_TOKEN_EXPIRE_MINUTES)
-    #     return JWTService.create_token(
-    #         data={"sub": authenticated_user.login},
-    #         expires_delta=refresh_token_expire,
-    #     )
-
     @classmethod
     def decode_jwt(cls, token: str) -> dict:
         try:
