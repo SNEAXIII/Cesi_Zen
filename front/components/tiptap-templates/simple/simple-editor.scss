@@ -11,7 +11,9 @@ body {
   font-weight: 400;
   font-style: normal;
   padding: 0;
-
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  height: 100vh;
   .dark & {
     --tt-theme-text: var(--tt-gray-dark-900);
   }
@@ -25,20 +27,13 @@ body,
   background-color: var(--tt-bg-color);
 }
 
-body {
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  height: 100vh;
-}
-
 .tiptap.ProseMirror {
   font-family: 'DM Sans', sans-serif;
   min-height: 100%;
-  padding-bottom: 80px;
 }
 
 /* Styles pour la scrollbar de la toolbar mobile */
-[data-mobile="true"] {
+[data-mobile='true'] {
   &::-webkit-scrollbar {
     height: 4px;
   }
@@ -84,7 +79,6 @@ body {
 }
 
 .simple-editor-content {
-  max-width: 640px;
   width: 100%;
   margin: 0 auto;
 }
