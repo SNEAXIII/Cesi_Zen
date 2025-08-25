@@ -54,7 +54,7 @@ def validate_email_mock(mocker):
 
 def test_password_validator_success():
     # Arrange
-    password = "Complex1A!"
+    password = "Complex1A!" # NOSONAR
 
     # Act
     result = password_validator(password)
