@@ -9,7 +9,6 @@ if TYPE_CHECKING:
     from src.models.User import User
     from src.models.Category import Category
 
-# TODO fix typo in name...
 class Article(SQLModel, table=True):
     __tablename__ = "article"
 
