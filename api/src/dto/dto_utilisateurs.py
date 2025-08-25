@@ -15,7 +15,7 @@ from src.validators.user_validator import (
 )
 
 EXAMPLE_EMAIL = "user@gmail.com"
-EXAMPLE_PASSWORD = "Securepass1!"
+EXAMPLE_PASSWORD = "Securepass1!" # NOSONAR
 
 
 class Password(BaseModel):
