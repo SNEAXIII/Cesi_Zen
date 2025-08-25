@@ -10,9 +10,7 @@ from src.security.secrets import SECRET
 
 async_engine = AsyncEngine(
     create_engine(
-        url=f"mysql+aiomysql://{SECRET.MARIADB_USER}:{SECRET.MARIADB_PASSWORD}@{SECRET.MARIADB_HOST}/{SECRET.MARIADB_DATABASE}",
-        # Enable this for verbose log in the ORM
-        # echo=True,
+        url=f"mysql+aiomysql://{SECRET.MARIADB_USER}:{SECRET.MARIADB_PASSWORD}@{SECRET.MARIADB_HOST}/{SECRET.MARIADB_DATABASE}"
     )
 )
 
