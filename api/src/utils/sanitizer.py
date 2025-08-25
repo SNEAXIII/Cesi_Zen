@@ -20,6 +20,10 @@ _cleaner = Cleaner(
         "blockquote",
         "code",
         "pre",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
     },
     strip=True,
 )
