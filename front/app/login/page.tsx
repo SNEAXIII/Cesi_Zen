@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader, CheckCircle } from 'lucide-react';
+import { Loader, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import { MdErrorOutline } from 'react-icons/md';
 import styles from '@/app/ui/form.module.css';
 import { BiUser } from 'react-icons/bi';
@@ -22,6 +22,7 @@ function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') ?? '/';
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<LoginFormData>({
     username: '',
     password: '',
@@ -136,16 +137,26 @@ function LoginPageContent() {
                     Mot de passe
                   </label>
                 </div>
-                <Input
-                  id='password'
-                  name='password'
-                  type='password'
-                  autoComplete='current-password'
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className={styles.inputBase}
-                />
+                <div className="relative">
+                  <Input
+                    id='password'
+                    name='password'
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete='current-password'
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={`${styles.inputBase} pr-10`}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
               </div>
             </div>
             <Button

@@ -9,7 +9,6 @@ from src.security.secrets import SECRET
 
 engine = create_engine(
     f"mysql+pymysql://{SECRET.MARIADB_USER}:{SECRET.MARIADB_PASSWORD}@localhost/{SECRET.MARIADB_DATABASE}",
-    # echo=True,
 )
 
 alembic_cfg = Config("alembic.ini")

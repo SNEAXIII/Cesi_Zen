@@ -19,11 +19,9 @@ from starlette.responses import JSONResponse
 
 from src.security.secrets import SECRET
 
-# ic.disable()
 ic(f"Targeted db: {SECRET.MARIADB_DATABASE}")
 
 app = FastAPI()
-# origins = ["http://localhost:*", "http://192.168.1.14:3000", "http://127.0.0.1:8000"]
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
@@ -75,9 +73,7 @@ async def check_user_role(
 ):
     uri = request.url.path.rstrip("/")
     method = request.method
-    # body = await request.body()
     ic(f"Requested {method} {uri = }")
-    # print(f"{body = }")
     start_time = perf_counter()
     response: _StreamingResponse = await next_function(request)
     process_time = perf_counter() - start_time

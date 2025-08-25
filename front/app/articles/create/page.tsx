@@ -39,8 +39,8 @@ const formSchema = z.object({
   title: z.string().min(5, {
     message: 'Le titre doit contenir au moins 5 caractères.',
   }),
-  content: z.string().min(10, {
-    message: 'Le contenu doit contenir au moins 10 caractères.',
+  content: z.string().min(30, {
+    message: 'Le contenu de l\'article est trop court!',
   }),
   category: z.preprocess(
     (val) => (val === '' ? undefined : Number(val)),

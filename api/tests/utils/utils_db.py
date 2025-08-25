@@ -8,9 +8,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 IS_ECHO = False
-# IS_ECHO = True
 IS_ECHO_ASYNC = False
-# IS_ECHO_ASYNC = True
 DB_NAME = "test.db"
 
 sqlite_sync_engine = create_engine(

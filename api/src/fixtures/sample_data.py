@@ -12,7 +12,6 @@ from src.models import Article, Category, User, LoginLog, ExerciseCoherenceCardi
 
 sync_engine = create_engine(
     f"mysql+pymysql://{SECRET.MARIADB_USER}:{SECRET.MARIADB_PASSWORD}@{SECRET.MARIADB_HOST}/{SECRET.MARIADB_DATABASE}",
-    # echo=True,
 )
 
 fake = Faker(locale="en")

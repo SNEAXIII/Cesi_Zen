@@ -8,6 +8,7 @@ import { formatDateInFrenchLong } from '@/app/lib/utils';
 import { Article, getArticle } from '@/app/services/articles';
 import RichTextContent from '@/app/ui/html-viewer/RichTextContent';
 import ArticleCreatorBadge from '@/app/ui/users/bubble';
+import { ArrowLeft } from 'lucide-react';
 
 export default function ArticlePage() {
   const router = useRouter();
@@ -44,19 +45,24 @@ export default function ArticlePage() {
     }
   }, [id]);
 
-  if (isLoading) {
-    return (
-      <div className='max-w-4xl mx-auto px-4 py-8'>
+  return (
+    <div className='mx-auto px-4 py-8'>
+      {/* Bouton retour toujours visible */}
+      <Button
+        variant='outline'
+        onClick={() => router.back()}
+        className='mb-6'
+      >
+        <ArrowLeft className="h-4 w-4" /> Retour
+      </Button>
+
+      {isLoading && (
         <div className='flex justify-center items-center h-64'>
           <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500'></div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  if (error || !article) {
-    return (
-      <div className='max-w-4xl mx-auto px-4 py-8'>
+      {error && !isLoading && (
         <div className='bg-red-50 border-l-4 border-red-400 p-4'>
           <div className='flex'>
             <div className='flex-shrink-0'>
@@ -77,52 +83,42 @@ export default function ArticlePage() {
             </div>
           </div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  return (
-    <div className='max-w-4xl mx-auto px-4 py-8'>
-      <Button
-        variant='outline'
-        onClick={() => router.back()}
-        className='mb-6'
-      >
-        &larr; Retour
-      </Button>
-
-      <Card className='mb-6'>
-        <CardHeader>
-          <div className='flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4'>
-            <div>
-              <span className='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-2'>
-                {article.category}
-              </span>
-              <CardTitle className='text-3xl font-bold'>{article.title}</CardTitle>
-            </div>
-            <div className='text-sm text-gray-500 whitespace-nowrap'>
-              {formatDateInFrenchLong(article.created_at)}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className='mt-4'>
-            <RichTextContent
-              content={article.content}
-              className='text-gray-700'
-            />
-          </div>
-
-          <div className='mt-8 pt-6 border-t border-gray-200'>
-            <div className='flex items-center gap-2'>
-              <ArticleCreatorBadge creator={article.creator} />
+      {!isLoading && article && (
+        <Card className='mb-6'>
+          <CardHeader>
+            <div className='flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4'>
               <div>
-                <p className='text-sm text-gray-500'>Auteur: {article.creator}</p>
+                <span className='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-2'>
+                  {article.category}
+                </span>
+                <CardTitle className='text-5xl font-bold'>{article.title}</CardTitle>
+              </div>
+              <div className='text-sm text-gray-500 whitespace-nowrap'>
+                {formatDateInFrenchLong(article.created_at)}
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent>
+            <div className='mt-4'>
+              <RichTextContent
+                content={article.content}
+                className='text-gray-700'
+              />
+            </div>
+
+            <div className='mt-8 pt-6 border-t border-gray-200'>
+              <div className='flex items-center gap-2'>
+                <ArticleCreatorBadge creator={article.creator} />
+                <div>
+                  <p className='text-sm text-gray-500'>Auteur: {article.creator}</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
