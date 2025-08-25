@@ -45,13 +45,10 @@ export async function createArticle(articleData: ArticleData, token?: string) {
 
 export async function deleteArticle(articleId: string | number, token?: string) {
   const headers = getHeaders(token);
-  const response = await fetch(
-    `${CLIENT_API_URL}/admin/articles/${articleId}`,
-    {
-      method: 'DELETE',
-      headers,
-    }
-  );
+  const response = await fetch(`${CLIENT_API_URL}/admin/articles/${articleId}`, {
+    method: 'DELETE',
+    headers,
+  });
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
     throw new Error(error.message ?? "Erreur lors de la suppression de l'article");
@@ -64,17 +61,15 @@ export async function getArticle(articleId: string | number): Promise<Article> {
 
   if (!response.ok) {
     let errorMessage = `Erreur ${response.status} lors de la récupération de l'article`;
-    try {
-      const errorData = await response.json();
-      // Si le serveur renvoie { message: "..." } ou un simple string
-      if (errorData?.message) {
-        errorMessage = errorData.message;
-      } else if (typeof errorData === "string") {
-        errorMessage = errorData;
-      }
-    } catch (e) {
-      // ignore JSON parsing error
+
+    const errorData = await response.json();
+    // Si le serveur renvoie { message: "..." } ou un simple string
+    if (errorData?.message) {
+      errorMessage = errorData.message;
+    } else if (typeof errorData === 'string') {
+      errorMessage = errorData;
     }
+
     throw new Error(errorMessage);
   }
 
