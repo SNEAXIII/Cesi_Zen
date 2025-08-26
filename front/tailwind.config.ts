@@ -84,5 +84,10 @@ const config: Config = {
     },
   },
   plugins: [require('@tailwindcss/forms'), require('tailwindcss-animate')],
+  safelist: [
+    {
+      pattern: /(bg|text|border)-(blue|green|purple)-(50|200|800)/,
+    },
+  ],
 };
 export default config;
