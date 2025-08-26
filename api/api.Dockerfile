@@ -12,9 +12,9 @@ RUN addgroup --system --gid 1001 python&&\
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY --chmod=755 --chown=fastapi:python migrations ./migrations
-COPY --chmod=755 --chown=fastapi:python alembic.ini main.py run.sh wait-for-it.sh ./
-COPY --chmod=755 --chown=fastapi:python src ./src
+COPY --chown=fastapi:python --chmod=744 migrations ./migrations
+COPY --chown=fastapi:python --chmod=744 alembic.ini main.py run.sh wait-for-it.sh ./
+COPY --chown=fastapi:python --chmod=744 src ./src
 RUN find . -type f -name "*.sh" -exec dos2unix {} \;
 
 USER fastapi
