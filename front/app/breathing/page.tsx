@@ -7,11 +7,34 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, Play, Pause, X } from 'lucide-react';
+
 enum BreathingPhase {
   INSPIRATION = 'inspiration',
   EXPIRATION = 'expiration',
   APNEA = 'apnea',
 }
+
+const PHASE_CONFIG = {
+  [BreathingPhase.INSPIRATION]: {
+    label: "Inspiration",
+    color: "blue",
+    instruction: "Inspirez",
+    durationKey: "duration_inspiration",
+  },
+  [BreathingPhase.EXPIRATION]: {
+    label: "Expiration",
+    color: "green",
+    instruction: "Expirez",
+    durationKey: "duration_expiration",
+  },
+  [BreathingPhase.APNEA]: {
+    label: "Apnée",
+    color: "purple",
+    instruction: "Bloquez votre respiration",
+    durationKey: "duration_apnea",
+  },
+} as const;
+
 type ExerciseCardProps = {
   exercise: Exercise;
   onStart: (exercise: Exercise) => void;
@@ -24,22 +47,10 @@ const ExerciseCard = ({ exercise, onStart }: ExerciseCardProps) => (
     </CardHeader>
     <CardContent className='space-y-3'>
       <div className='grid grid-cols-2 gap-4'>
-        <ExerciseDetail
-          label='Inspiration'
-          value={`${exercise.duration_inspiration}s`}
-        />
-        <ExerciseDetail
-          label='Expiration'
-          value={`${exercise.duration_expiration}s`}
-        />
-        <ExerciseDetail
-          label='Apnée'
-          value={`${exercise.duration_apnea}s`}
-        />
-        <ExerciseDetail
-          label='Cycles'
-          value={exercise.number_cycles.toString()}
-        />
+        <ExerciseDetail label='Inspiration' value={`${exercise.duration_inspiration}s`} />
+        <ExerciseDetail label='Expiration' value={`${exercise.duration_expiration}s`} />
+        <ExerciseDetail label='Apnée' value={`${exercise.duration_apnea}s`} />
+        <ExerciseDetail label='Cycles' value={exercise.number_cycles.toString()} />
       </div>
     </CardContent>
     <CardFooter>
@@ -63,19 +74,13 @@ const ExerciseDetail = ({ label, value }: { label: string; value: string }) => (
 const LoadingSkeleton = () => (
   <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
     {[1, 2, 3].map((i) => (
-      <Card
-        key={i}
-        className='w-full'
-      >
+      <Card key={i} className='w-full'>
         <CardHeader>
           <Skeleton className='h-6 w-3/4' />
         </CardHeader>
         <CardContent className='space-y-4'>
           {[1, 2, 3, 4].map((j) => (
-            <div
-              key={j}
-              className='flex justify-between items-center'
-            >
+            <div key={j} className='flex justify-between items-center'>
               <Skeleton className='h-4 w-1/2' />
               <Skeleton className='h-4 w-1/4' />
             </div>
@@ -141,6 +146,19 @@ export default function BreathingPage() {
     }
   };
 
+  const buildDictColor = (color: string) => {
+    return {
+      fill: `bg-${color}-200`,
+      bg: `bg-${color}-50`,
+      text: `text-${color}-800`,
+      border: `border-${color}-200`,
+    };
+  };
+
+  const getPhaseColor = () => {
+    return buildDictColor(PHASE_CONFIG[currentPhase].color);
+  };
+
   const startExercise = (exercise: Exercise) => {
     setCurrentExercise(exercise);
     setIsStarting(true);
@@ -203,7 +221,6 @@ export default function BreathingPage() {
       return 0;
     }
 
-    // New cycle
     setCurrentCycle((prev) => prev + 1);
     setCurrentPhase(BreathingPhase.INSPIRATION);
     return currentExercise.duration_inspiration;
@@ -226,34 +243,11 @@ export default function BreathingPage() {
     };
   }, [isRunning, currentPhase, currentCycle, currentExercise]);
 
-  const getPhaseLabel = () => {
-    switch (currentPhase) {
-      case BreathingPhase.INSPIRATION:
-        return 'Inspirez';
-      case BreathingPhase.EXPIRATION:
-        return 'Expirez';
-      case BreathingPhase.APNEA:
-        return 'Bloquez votre respiration';
-      default:
-        return '';
-    }
-  };
-
-  const getPhaseDuration = () => {
-    if (!currentExercise) return 0;
-    if (currentPhase === BreathingPhase.INSPIRATION) {
-      return currentExercise.duration_inspiration;
-    } else if (currentPhase === BreathingPhase.EXPIRATION) {
-      return currentExercise.duration_expiration;
-    } else {
-      return currentExercise.duration_apnea;
-    }
-  };
   const getFillHeight = () => {
     if (!currentExercise || !timeLeft) return '0%';
     if (![BreathingPhase.INSPIRATION, BreathingPhase.EXPIRATION].includes(currentPhase))
       return '100%';
-    const duration = getPhaseDuration();
+    const duration = currentExercise[PHASE_CONFIG[currentPhase].durationKey];
     if (duration === 0) return '0%';
     const percentage = ((duration - timeLeft) / duration) * 100;
     if (currentPhase === BreathingPhase.EXPIRATION) {
@@ -262,32 +256,9 @@ export default function BreathingPage() {
     return `${percentage}%`;
   };
 
-  const getPhaseColor = () => {
-    if (currentPhase === BreathingPhase.INSPIRATION) {
-      return {
-        fill: 'bg-blue-200',
-        bg: 'bg-blue-50',
-        text: 'text-blue-800',
-        border: 'border-blue-200',
-      };
-    } else if (currentPhase === BreathingPhase.EXPIRATION) {
-      return {
-        fill: 'bg-green-200',
-        bg: 'bg-green-50',
-        text: 'text-green-800',
-        border: 'border-green-200',
-      };
-    } else {
-      return {
-        fill: 'bg-purple-200',
-        bg: 'bg-purple-50',
-        text: 'text-purple-800',
-        border: 'border-purple-200',
-      };
-    }
-  };
-
-  // Show finished screen
+  // --------------------------
+  // Finished screen
+  // --------------------------
   if (isFinished) {
     return (
       <PageLayout showHeader={false}>
@@ -300,12 +271,7 @@ export default function BreathingPage() {
               viewBox='0 0 24 24'
               xmlns='http://www.w3.org/2000/svg'
             >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                d='M5 13l4 4L19 7'
-              />
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M5 13l4 4L19 7' />
             </svg>
           </div>
           <h2 className='text-3xl font-bold'>Exercice terminé !</h2>
@@ -327,7 +293,9 @@ export default function BreathingPage() {
     );
   }
 
-  // Show the current exercise screen
+  // --------------------------
+  // Exercise screen
+  // --------------------------
   if (currentExercise) {
     return (
       <PageLayout showHeader={false}>
@@ -356,7 +324,7 @@ export default function BreathingPage() {
                 <div className='absolute inset-0 rounded-full border-4 border-gray-200 overflow-hidden'>
                   <div className='absolute inset-0 bg-gray-50'></div>
                   <div
-                    className={`absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-in-out ${getPhaseColor().fill}`}
+                    className={`absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-linear ${getPhaseColor().fill}`}
                     style={{ height: getFillHeight() }}
                   ></div>
                   <div className='absolute inset-0 flex items-center justify-center'>
@@ -369,24 +337,14 @@ export default function BreathingPage() {
                 </div>
               </div>
 
-              <p className='text-xl font-medium'>{getPhaseLabel()}</p>
+              <p className='text-xl font-medium'>{PHASE_CONFIG[currentPhase].instruction}</p>
 
               <div className='flex space-x-4'>
-                <Button
-                  variant='outline'
-                  size='lg'
-                  className='gap-2'
-                  onClick={togglePause}
-                >
+                <Button variant='outline' size='lg' className='gap-2' onClick={togglePause}>
                   {isRunning ? <Pause className='h-5 w-5' /> : <Play className='h-5 w-5' />}
                   {isRunning ? 'Pause' : 'Reprendre'}
                 </Button>
-                <Button
-                  variant='outline'
-                  size='lg'
-                  className='gap-2'
-                  onClick={() => resetExercise()}
-                >
+                <Button variant='outline' size='lg' className='gap-2' onClick={() => resetExercise()}>
                   <X className='h-5 w-5' />
                   Arrêter
                 </Button>
@@ -398,7 +356,9 @@ export default function BreathingPage() {
     );
   }
 
-  // Show loading state
+  // --------------------------
+  // Loading
+  // --------------------------
   if (loading) {
     return (
       <PageLayout>
@@ -433,15 +393,14 @@ export default function BreathingPage() {
     );
   }
 
+  // --------------------------
+  // Exercise list
+  // --------------------------
   return (
     <PageLayout>
       <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
         {exercises.exercises.map((exercise) => (
-          <ExerciseCard
-            key={exercise.id}
-            exercise={exercise}
-            onStart={startExercise}
-          />
+          <ExerciseCard key={exercise.id} exercise={exercise} onStart={startExercise} />
         ))}
       </div>
     </PageLayout>
