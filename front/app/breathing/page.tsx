@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, Play, Pause, X } from 'lucide-react';
 import { HiCheckCircle } from 'react-icons/hi';
+import PageLayout from '@/app/ui/exercises/page-layout';
 
 enum BreathingPhase {
   INSPIRATION = 'inspiration',
@@ -42,7 +43,7 @@ type ExerciseCardProps = {
 };
 
 const ExerciseCard = ({ exercise, onStart }: ExerciseCardProps) => (
-  <Card className='hover:shadow-lg transition-shadow'>
+  <Card className='hover:shadow-lg transition-shadow w-64 h-64'>
     <CardHeader>
       <CardTitle className='text-xl'>{exercise.name}</CardTitle>
     </CardHeader>
@@ -113,27 +114,6 @@ const LoadingSkeleton = () => (
   </div>
 );
 
-const PageLayout = ({
-  children,
-  showHeader = true,
-}: {
-  children: React.ReactNode;
-  showHeader?: boolean;
-}) => (
-  <div className='container mx-auto'>
-    {showHeader && (
-      <div className='flex flex-col space-y-2 mb-8'>
-        <h1 className='text-3xl font-bold tracking-tight'>Exercices de respiration</h1>
-        <p className='text-muted-foreground'>
-          Choisissez un exercice pour commencer votre séance de respiration. Installez vous dans un
-          endroit calme. Durée estimée de l'exercice: 5 minutes.
-        </p>
-      </div>
-    )}
-    {children}
-  </div>
-);
-
 export default function BreathingPage() {
   const [exercises, setExercises] = useState<ExercisesResponse>({ exercises: [] });
   const [loading, setLoading] = useState(true);
@@ -148,6 +128,38 @@ export default function BreathingPage() {
   const [countdown, setCountdown] = useState(3);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    console.log('[STATE DEBUG]', {
+      exercises,
+      loading,
+      error,
+      currentExercise,
+      isRunning,
+      currentPhase,
+      timeLeft,
+      currentCycle,
+      isStarting,
+      isFinished,
+      countdown,
+      timerRef: timerRef.current,
+      countdownRef: countdownRef.current,
+    });
+  }, [
+    exercises,
+    loading,
+    error,
+    currentExercise,
+    isRunning,
+    currentPhase,
+    timeLeft,
+    currentCycle,
+    isStarting,
+    isFinished,
+    countdown,
+    timerRef,
+    countdownRef,
+  ]);
 
   useEffect(() => {
     fetchExercises();
@@ -212,10 +224,11 @@ export default function BreathingPage() {
     if (finished) {
       setIsFinished(true);
     } else {
-      setCurrentExercise(null);
-      setIsRunning(false);
-      setIsStarting(false);
+      setIsFinished(false);
     }
+    setCurrentExercise(null);
+    setIsRunning(false);
+    setIsStarting(false);
   };
 
   const togglePause = () => {
@@ -228,7 +241,7 @@ export default function BreathingPage() {
       return 0;
     }
     if (currentPhase === BreathingPhase.INSPIRATION) {
-      if (currentExercise?.[PHASE_CONFIG[BreathingPhase.INSPIRATION]?.durationKey] !== 0) {
+      if (currentExercise?.[PHASE_CONFIG[BreathingPhase.APNEA]?.durationKey] !== 0) {
         setCurrentPhase(BreathingPhase.APNEA);
         return currentExercise.duration_apnea;
       } else {
@@ -249,7 +262,7 @@ export default function BreathingPage() {
       return 0;
     }
 
-    setCurrentCycle((prev) => prev + 1);
+    setCurrentCycle(currentCycle + 1);
     setCurrentPhase(BreathingPhase.INSPIRATION);
     return currentExercise.duration_inspiration;
   };
@@ -297,8 +310,7 @@ export default function BreathingPage() {
           </p>
           <Button
             onClick={() => {
-              setIsFinished(false);
-              setCurrentExercise(null);
+              resetExercise();
             }}
             className='mt-4'
             size='lg'
