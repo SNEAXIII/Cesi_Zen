@@ -15,8 +15,8 @@ ADMIN_EMAIL  = f"{ADMIN_LOGIN}@gmail.com"
 
 # Password
 PASSWORD = "ComplexPassword1!" # NOSONAR
-PLAIN_PASSWORD = "password"
-HASHED_PASSWORD = "$2b$04$c5i699sDUICKICmOARITy.wCpNpnp8U/hXlqWtHmvgZBtXc4iUF0y"
+PLAIN_PASSWORD = "password" # NOSONAR
+HASHED_PASSWORD = "$2b$04$c5i699sDUICKICmOARITy.wCpNpnp8U/hXlqWtHmvgZBtXc4iUF0y" # NOSONAR
 
 FAKE_TOKEN = "FAKE_TOKEN"  # For unit test purpose
 
