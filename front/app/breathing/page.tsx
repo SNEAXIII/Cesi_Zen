@@ -109,7 +109,6 @@ export default function BreathingPage() {
     }
   };
 
-
   const startExercise = (exercise: Exercise) => {
     setCurrentExercise(exercise);
     setIsStarting(true);
@@ -210,7 +209,7 @@ export default function BreathingPage() {
     }
     const duration = currentExercise?.[PHASE_CONFIG[currentPhase]?.durationKey];
     if (!duration) return '0%';
-    const percentage = ((duration - timeLeft + 1) / duration) * 100;
+    const percentage = Math.min(((duration - timeLeft) / duration) * 110, 100);
     return currentPhase === BreathingPhase.EXPIRATION ? `${100 - percentage}%` : `${percentage}%`;
   };
 
