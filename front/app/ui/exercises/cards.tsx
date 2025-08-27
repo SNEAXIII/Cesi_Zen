@@ -51,13 +51,3 @@ const ExerciseDetail = ({ label, value }: { label: string; value: string }) => (
   </div>
 );
 
-export const LoadingSkeleton = () => (
-  <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
-    {[1, 2, 3].map((i) => (
-      <Card
-        key={i}
-        className='w-64 h-64'
-      ></Card>
-    ))}
-  </div>
-);
