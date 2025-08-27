@@ -3,12 +3,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { getExercises, Exercise, ExercisesResponse } from '@/app/services/exercise';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, Play, Pause, X } from 'lucide-react';
 import { HiCheckCircle } from 'react-icons/hi';
 import PageLayout from '@/app/ui/exercises/page-layout';
+import ExerciseList from '../ui/exercises/exercise-list';
+import ExerciseCountdown from '../ui/exercises/starting';
+
+const buildDictColor = (color: string) => {
+  return {
+    fill: `bg-${color}-200`,
+    bg: `bg-${color}-50`,
+    text: `text-${color}-800`,
+    border: `border-${color}-200`,
+  };
+};
 
 enum BreathingPhase {
   INSPIRATION = 'inspiration',
@@ -19,100 +28,23 @@ enum BreathingPhase {
 const PHASE_CONFIG = {
   [BreathingPhase.INSPIRATION]: {
     label: 'Inspiration',
-    color: 'blue',
+    color: buildDictColor('blue'),
     instruction: 'Inspirez',
     durationKey: 'duration_inspiration',
   },
   [BreathingPhase.EXPIRATION]: {
     label: 'Expiration',
-    color: 'green',
+    color: buildDictColor('green'),
     instruction: 'Expirez',
     durationKey: 'duration_expiration',
   },
   [BreathingPhase.APNEA]: {
     label: 'Apnée',
-    color: 'purple',
+    color: buildDictColor('purple'),
     instruction: 'Bloquez votre respiration',
     durationKey: 'duration_apnea',
   },
 } as const;
-
-type ExerciseCardProps = {
-  exercise: Exercise;
-  onStart: (exercise: Exercise) => void;
-};
-
-const ExerciseCard = ({ exercise, onStart }: ExerciseCardProps) => (
-  <Card className='hover:shadow-lg transition-shadow w-64 h-64'>
-    <CardHeader>
-      <CardTitle className='text-xl'>{exercise.name}</CardTitle>
-    </CardHeader>
-    <CardContent className='space-y-3'>
-      <div className='grid grid-cols-2 gap-4'>
-        <ExerciseDetail
-          label='Inspiration'
-          value={`${exercise.duration_inspiration}s`}
-        />
-        <ExerciseDetail
-          label='Expiration'
-          value={`${exercise.duration_expiration}s`}
-        />
-        <ExerciseDetail
-          label='Apnée'
-          value={`${exercise.duration_apnea}s`}
-        />
-        <ExerciseDetail
-          label='Cycles'
-          value={exercise.number_cycles.toString()}
-        />
-      </div>
-    </CardContent>
-    <CardFooter>
-      <Button
-        className='w-full bg-blue-600 hover:bg-blue-700'
-        onClick={() => onStart(exercise)}
-      >
-        Commencer
-      </Button>
-    </CardFooter>
-  </Card>
-);
-
-const ExerciseDetail = ({ label, value }: { label: string; value: string }) => (
-  <div>
-    <p className='text-sm text-muted-foreground'>{label}</p>
-    <p className='font-medium'>{value}</p>
-  </div>
-);
-
-const LoadingSkeleton = () => (
-  <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
-    {[1, 2, 3].map((i) => (
-      <Card
-        key={i}
-        className='w-full'
-      >
-        <CardHeader>
-          <Skeleton className='h-6 w-3/4' />
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          {[1, 2, 3, 4].map((j) => (
-            <div
-              key={j}
-              className='flex justify-between items-center'
-            >
-              <Skeleton className='h-4 w-1/2' />
-              <Skeleton className='h-4 w-1/4' />
-            </div>
-          ))}
-        </CardContent>
-        <CardFooter>
-          <Skeleton className='h-10 w-full rounded-md' />
-        </CardFooter>
-      </Card>
-    ))}
-  </div>
-);
 
 export default function BreathingPage() {
   const [exercises, setExercises] = useState<ExercisesResponse>({ exercises: [] });
@@ -177,18 +109,6 @@ export default function BreathingPage() {
     }
   };
 
-  const buildDictColor = (color: string) => {
-    return {
-      fill: `bg-${color}-200`,
-      bg: `bg-${color}-50`,
-      text: `text-${color}-800`,
-      border: `border-${color}-200`,
-    };
-  };
-
-  const getPhaseColor = () => {
-    return buildDictColor(PHASE_CONFIG[currentPhase].color);
-  };
 
   const startExercise = (exercise: Exercise) => {
     setCurrentExercise(exercise);
@@ -330,16 +250,10 @@ export default function BreathingPage() {
       <PageLayout showHeader={false}>
         <div className='flex flex-col items-center justify-center space-y-8 py-12'>
           {isStarting ? (
-            <>
-              <div className='text-center space-y-2'>
-                <h2 className='text-2xl font-bold'>{currentExercise.name}</h2>
-                <p className='text-muted-foreground'>Préparation de l'exercice</p>
-              </div>
-              <div className='rounded-full w-64 h-64 flex items-center justify-center text-8xl font-bold bg-gray-100 text-gray-800'>
-                {countdown}
-              </div>
-              <p className='text-xl font-medium'>Début dans...</p>
-            </>
+            <ExerciseCountdown
+              countdown={countdown}
+              name={currentExercise.name}
+            ></ExerciseCountdown>
           ) : (
             <>
               <div className='text-center space-y-2'>
@@ -353,12 +267,12 @@ export default function BreathingPage() {
                 <div className='absolute inset-0 rounded-full border-4 border-gray-200 overflow-hidden'>
                   <div className='absolute inset-0 bg-gray-50'></div>
                   <div
-                    className={`absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-linear ${getPhaseColor().fill}`}
+                    className={`absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-linear ${PHASE_CONFIG[currentPhase].color.fill}`}
                     style={{ height: getFillHeight() }}
                   ></div>
                   <div className='absolute inset-0 flex items-center justify-center'>
                     <div
-                      className={`w-56 h-56 rounded-full flex items-center justify-center text-5xl font-bold z-10 ${getPhaseColor().bg} ${getPhaseColor().text}`}
+                      className={`w-56 h-56 rounded-full flex items-center justify-center text-5xl font-bold z-10 ${PHASE_CONFIG[currentPhase].color.bg} ${PHASE_CONFIG[currentPhase].color.text}`}
                     >
                       {timeLeft}s
                     </div>
@@ -396,16 +310,8 @@ export default function BreathingPage() {
   }
 
   // --------------------------
-  // Loading
+  // Error
   // --------------------------
-  if (loading) {
-    return (
-      <PageLayout>
-        <LoadingSkeleton />
-      </PageLayout>
-    );
-  }
-
   if (error) {
     return (
       <PageLayout>
@@ -418,34 +324,16 @@ export default function BreathingPage() {
     );
   }
 
-  if (exercises.exercises.length === 0) {
-    return (
-      <PageLayout>
-        <Alert>
-          <AlertCircle className='h-4 w-4' />
-          <AlertTitle>Pas d'exercices disponibles</AlertTitle>
-          <AlertDescription>
-            Pas d'exercices disponibles. Veuillez réessayer plus tard.
-          </AlertDescription>
-        </Alert>
-      </PageLayout>
-    );
-  }
-
   // --------------------------
   // Exercise list
   // --------------------------
   return (
     <PageLayout>
-      <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
-        {exercises.exercises.map((exercise) => (
-          <ExerciseCard
-            key={exercise.id}
-            exercise={exercise}
-            onStart={startExercise}
-          />
-        ))}
-      </div>
+      <ExerciseList
+        exercises={exercises.exercises}
+        onStart={startExercise}
+        loading={loading}
+      />
     </PageLayout>
   );
 }
