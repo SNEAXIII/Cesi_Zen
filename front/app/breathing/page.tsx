@@ -58,40 +58,8 @@ export default function BreathingPage() {
   const [isStarting, setIsStarting] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [countdown, setCountdown] = useState(3);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const countdownRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    console.log('[STATE DEBUG]', {
-      exercises,
-      loading,
-      error,
-      currentExercise,
-      isRunning,
-      currentPhase,
-      timeLeft,
-      currentCycle,
-      isStarting,
-      isFinished,
-      countdown,
-      timerRef: timerRef.current,
-      countdownRef: countdownRef.current,
-    });
-  }, [
-    exercises,
-    loading,
-    error,
-    currentExercise,
-    isRunning,
-    currentPhase,
-    timeLeft,
-    currentCycle,
-    isStarting,
-    isFinished,
-    countdown,
-    timerRef,
-    countdownRef,
-  ]);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     fetchExercises();
@@ -117,7 +85,10 @@ export default function BreathingPage() {
     countdownRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          clearInterval(countdownRef.current!);
+          if (countdownRef.current) {
+            clearInterval(countdownRef.current);
+            countdownRef.current = null;
+          }
           setIsStarting(false);
           setCurrentPhase(BreathingPhase.INSPIRATION);
           setTimeLeft(exercise.duration_inspiration);

@@ -9,7 +9,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json package-lock.json* .npmrc* ./
+COPY package.json package-lock.json ./
 RUN \
   if [ -f package-lock.json ]; then npm ci; \
   else echo "Lockfile not found." && exit 1; \
@@ -57,7 +57,7 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 #Add utils script
-COPY --chmod=755 ./run.sh ./wait-for-it.sh ./
+COPY --chmod=555 ./run.sh ./wait-for-it.sh ./
 RUN find . -type f -name "*.sh" -exec dos2unix {} \;
 
 USER nextjs

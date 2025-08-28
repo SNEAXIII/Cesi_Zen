@@ -51,7 +51,7 @@ def create_sample_users(rolls: int) -> List[User]:
 
     users = []
     for role, state, index in product(roles, states, range(rolls)):
-        id_bonus = f"{randint(0, 9999)}".zfill(4)
+        id_bonus = f"{randint(0, 9999)}".zfill(4) # NOSONAR
         name = f"{(fake.first_name())}_{id_bonus}"
         email = f"{name}@gmail.com"
         password = hash_with_low_security(PASSWORD)
