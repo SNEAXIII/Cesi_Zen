@@ -13,7 +13,7 @@ RUN addgroup --system --gid 1001 python&&\
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY --chown=root:root --chmod=555 migrations ./migrations
-COPY --chown=root:root --chmod=555 alembic.ini main.py run.sh wait-for-it.sh ./
+COPY --chown=root:root --chmod=555 alembic.ini main.py run.sh wait-for-it.sh Makefile ./
 COPY --chown=root:root --chmod=555 src ./src
 RUN find . -type f -name "*.sh" -exec dos2unix {} \;
 
