@@ -4,7 +4,7 @@ metadata:
   name: cesi-zen
 ---
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
   name: db-env
   namespace: cesi-zen
@@ -36,7 +36,7 @@ spec:
           ports:
             - containerPort: 3306
           envFrom:
-            - configMapRef:
+            - secretRef:
                 name: db-env
           volumeMounts:
             - name: mariadb-data
@@ -115,11 +115,12 @@ spec:
       containers:
         - name: api
           image: sneaxiii/cesi-zen-api:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
           envFrom:
-            - configMapRef:
-                name: api-env   # ⚠️ à créer comme db-env
+            - secretRef:
+                name: api-env
           command: ["sh", "run.sh"]
 ---
 apiVersion: v1
@@ -154,11 +155,12 @@ spec:
       containers:
         - name: front
           image: sneaxiii/cesi-zen-front:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           envFrom:
-            - configMapRef:
-                name: front-env   # ⚠️ idem
+            - secretRef:
+                name: front-env
           command: ["sh", "run.sh"]
 ---
 apiVersion: v1
