@@ -5,7 +5,7 @@ export interface Category {
 }
 
 export async function getAllCategories(): Promise<Category[]> {
-  const response = await fetch(`${CLIENT_API_URL}/categories`);
+  const response = await fetch(`${CLIENT_API_URL}/categories/`);
 
   if (!response.ok) {
     const error = await response.json();
