@@ -6,17 +6,16 @@ services:
   mariadb:
     image: mariadb
     ports:
-      - 3306:3306
+      - "3306:3306"
     container_name: mariadb
     networks:
       - internal
     env_file: db.env
     volumes:
       - ./data/db/:/var/lib/mysql
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    ports:
-      - 8080:80
     container_name: myadmin
     networks:
       - internal
@@ -25,14 +24,13 @@ services:
       - PMA_PORT=3306
     depends_on:
       - mariadb
+
   api:
-    # image: sneaxiii/cesi-zen-api:latest
-    build:
-      context: ./api/
-      dockerfile: api.Dockerfile
+    image: sneaxiii/cesi-zen-api:latest
+#    build:
+#      context: ./api/
+#      dockerfile: api.Dockerfile
     container_name: api
-    ports:
-      - 8000:8000
     networks:
       - internal
     depends_on:
@@ -40,14 +38,13 @@ services:
     env_file:
       - api.env
     command: ["sh", "run.sh"]
+
   front:
-    # image: sneaxiii/cesi-zen-front:latest
-    build:
-      context: ./front
-      dockerfile: front.Dockerfile
+    image: sneaxiii/cesi-zen-front:latest
+#    build:
+#      context: ./front
+#      dockerfile: front.Dockerfile
     container_name: front
-    ports:
-      - 3000:3000
     networks:
       - internal
     depends_on:
@@ -55,3 +52,21 @@ services:
     env_file:
       - front.env
     command: [ "sh", "run.sh" ]
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - internal
+
+volumes:
+  caddy_data:
+  caddy_config:
