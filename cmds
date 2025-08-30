@@ -1,8 +1,0 @@
-minikube start
-minikube addons enable metrics-server
-./create-env.sh
-kubectl apply -f k8s-deploy.yaml
-kubectl rollout restart deployment -n cesi-zen
-kubectl get pods -n cesi-zen
-kubectl get services -n cesi-zen
-kubectl delete pod --all -n cesi-zen
