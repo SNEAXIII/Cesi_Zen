@@ -26,10 +26,10 @@ services:
       - mariadb
 
   api:
-    image: sneaxiii/cesi-zen-api:latest
-#    build:
-#      context: ./api/
-#      dockerfile: api.Dockerfile
+    # image: sneaxiii/cesi-zen-api:latest
+    build:
+      context: ./api/
+      dockerfile: api.Dockerfile
     container_name: api
     networks:
       - internal
@@ -40,10 +40,10 @@ services:
     command: ["sh", "run.sh"]
 
   front:
-    image: sneaxiii/cesi-zen-front:latest
-#    build:
-#      context: ./front
-#      dockerfile: front.Dockerfile
+    # image: sneaxiii/cesi-zen-front:latest
+    build:
+      context: ./front
+      dockerfile: front.Dockerfile
     container_name: front
     networks:
       - internal
