@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from icecream import ic
 from starlette.middleware.base import _StreamingResponse
+from src.security.secrets import IS_PROD
 from src.Messages.validators_messages import VALIDATION_ERROR
 from src.controllers.admin_controller import admin_controller
 from src.controllers.articles_controller import article_controller
@@ -21,7 +22,8 @@ from src.security.secrets import SECRET
 
 ic(f"Targeted db: {SECRET.MARIADB_DATABASE}")
 
-app = FastAPI()
+_extra_doc_part = "/api/back" if IS_PROD else ""
+app = FastAPI(openapi_url=f"{_extra_doc_part}/openapi.json")
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
@@ -108,6 +110,6 @@ async def http_exception_handler(request: Request, exc):
     )
 
 
-@app.get("/")
-async def test():
-    return {"hello": "world"}
+@app.get("/health_check")
+async def health_check():
+    return {"status": "ok"}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Status des serveurs</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+    h1 { color: #333; }
+    .server-status { padding: 10px 20px; margin-bottom: 10px; border-radius: 5px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .ok { color: green; font-weight: bold; }
+    .fail { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Status des serveurs</h1>
+
+  <div class="server-status">
+    Frontend Next.js: <span id="next-status">Checking...</span>
+  </div>
+
+  <div class="server-status">
+    Backend API: <span id="api-status">Checking...</span>
+  </div>
+
+  <script>
+    const nextUrl = "http://localhost/health_check";           // Next.js endpoint
+    const apiUrl = "http://localhost/api/back/health_check"; // FastAPI endpoint (via Caddy reverse proxy)
+
+    async function checkServer(url, elementId) {
+      const el = document.getElementById(elementId);
+      try {
+        const res = await fetch(url, { method: 'GET' });
+        if (res.ok) {
+          el.textContent = 'OK';
+          el.className = 'ok';
+        } else {
+          el.textContent = `Error ${res.status}`;
+          el.className = 'fail';
+        }
+      } catch {
+        el.textContent = 'Failed';
+        el.className = 'fail';
+      }
+    }
+
+    function startPolling() {
+      checkServer(nextUrl, 'next-status');
+      checkServer(apiUrl, 'api-status');
+      setInterval(() => {
+        checkServer(nextUrl, 'next-status');
+        checkServer(apiUrl, 'api-status');
+      }, 5000);
+    }
+
+    startPolling();
+  </script>
+</body>
+</html>
