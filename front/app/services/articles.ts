@@ -1,5 +1,5 @@
-import { getHeaders } from '@/app/lib/utils';
-import { CLIENT_API_URL } from '@/next.config';
+import {getHeaders} from '@/app/lib/utils';
+import {CLIENT_API_URL} from '@/next.config';
 
 interface ArticleData {
   title: string;
@@ -77,14 +77,13 @@ export async function getArticle(articleId: string | number): Promise<Article> {
 }
 
 export async function getAllArticles(categoryId?: number): Promise<ArticlesResponse> {
-  const url = new URL(`${CLIENT_API_URL}/articles`);
+  const url = new URL(`${CLIENT_API_URL}/articles/`);
 
   if (categoryId) {
     url.searchParams.append('category_id', categoryId.toString());
   }
 
   const response = await fetch(url.toString());
-
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message ?? 'Erreur lors de la récupération des articles');
