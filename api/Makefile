@@ -9,6 +9,7 @@ help:
 	@echo "create-mig	-->	create fresh new migration"
 	@echo "migrate	-->	execute pending migrations"
 	@echo "fixtures	-->	load all fixtures for one time"
+	@echo "init-db	-->	load one user and basic bdd"
 	@echo "cancel-last	-->	cancel last executed migration"
 	@echo "test-cov	-->	run the test coverage"
 	@echo "create-venv	-->	create the python virtual env"
@@ -39,6 +40,9 @@ fixtures:
 
 reset-db:
 	$(RUN_MODULE) src.fixtures.reset_db
+
+init-db:
+	$(RUN_MODULE) src.fixtures.first_init_prod.py
 
 cancel-last:
 	$(RUN_MODULE) alembic downgrade -1
