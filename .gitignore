@@ -5,7 +5,7 @@ data/db/*
 .coverage
 *.env
 !*.env.example
-todo
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
