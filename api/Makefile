@@ -8,7 +8,7 @@ help:
 	@echo "run-dev	-->	run the server in dev mode with auto reload"
 	@echo "create-mig	-->	create fresh new migration"
 	@echo "migrate	-->	execute pending migrations"
-	@echo "fixtures	-->	load all fixtures for one time"
+	@echo "fixtures	-->	load all fixtures for dev purposes"
 	@echo "init-db	-->	load one user and basic bdd"
 	@echo "cancel-last	-->	cancel last executed migration"
 	@echo "test-cov	-->	run the test coverage"
@@ -42,7 +42,7 @@ reset-db:
 	$(RUN_MODULE) src.fixtures.reset_db
 
 init-db:
-	$(RUN_MODULE) src.fixtures.first_init_prod.py
+	$(RUN_MODULE) src.fixtures.first_init_prod
 
 cancel-last:
 	$(RUN_MODULE) alembic downgrade -1

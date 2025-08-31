@@ -23,6 +23,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_API_CLIENT_HOST=92.112.192.100
 
 RUN \
   if [ -f package-lock.json ]; then npm run build; \
@@ -36,6 +37,7 @@ RUN apk add --no-cache bash
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NEXT_PUBLIC_API_CLIENT_HOST=92.112.192.100
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs &&\
