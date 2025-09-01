@@ -264,8 +264,12 @@
      ===================== */
 .tiptap.ProseMirror {
   a {
-    color: var(--link-text-color);
+    color: #2563eb; /* text-blue-600 */
     text-decoration: underline;
+
+    &:hover {
+      color: #1e40af; /* hover:text-blue-800 */
+    }
   }
 }
 
