@@ -2,7 +2,7 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { useEffect } from 'react';
+import Link from '@tiptap/extension-link';
 import '@/components/tiptap-node/code-block-node/code-block-node.scss';
 import '@/components/tiptap-node/image-node/image-node.scss';
 import '@/components/tiptap-node/list-node/list-node.scss';
@@ -15,11 +15,17 @@ type RichTextContentProps = {
 
 export default function RichTextContent({ content, className = '' }: RichTextContentProps) {
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit,
+      Link.configure({
+        HTMLAttributes: {
+          target: '_blank',
+        },
+      }),
+    ],
     content: content,
     editable: false,
   });
-
 
   if (!editor) {
     return (
@@ -29,5 +35,6 @@ export default function RichTextContent({ content, className = '' }: RichTextCon
       />
     );
   }
+
   return <EditorContent editor={editor} />;
 }
